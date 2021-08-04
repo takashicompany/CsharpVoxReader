@@ -68,13 +68,18 @@ namespace TakashiCompany.Unity.VoxReader
 		public class Voxel
 		{
 			[SerializeField]
-			private Vector3Int _position;
+			private Vector3Int _voxelPosition;
 
-			public Vector3Int position => _position;
+			public Vector3Int voxelPosition => _voxelPosition;
 
-			public int x => position.x;
-			public int y => position.y;
-			public int z => position.z;
+			[SerializeField]
+			private Vector3 _positionFromCenter;
+
+			public Vector3 positionFromCenter => _positionFromCenter;
+
+			public int x => voxelPosition.x;
+			public int y => voxelPosition.y;
+			public int z => voxelPosition.z;
 
 			[SerializeField]
 			private Face[] _faces;
@@ -86,12 +91,14 @@ namespace TakashiCompany.Unity.VoxReader
 
 			public HumanBodyBones bone => _bone;
 			
-			public Voxel(Vector3Int position, Vector3 center, float unitPerSize, HumanBodyBones bone)
+			public Voxel(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone)
 			{
-				_position = position;
+				_voxelPosition = position;
 
-				var min = center - Vector3.one * unitPerSize / 2;
-				var max = center + Vector3.one * unitPerSize / 2;
+				_positionFromCenter = positionFromCenter;
+
+				var min = positionFromCenter - Vector3.one * unitPerSize / 2;
+				var max = positionFromCenter + Vector3.one * unitPerSize / 2;
 
 				// (0,0,0) => (0,0,1) => (0,1,0) => (0,1,1) => (1,0,0) => (1,0,1) => (1,1,0) => (1,1,1)
 				var ldb = new Vector3(min.x, min.y, min.z);	// 左下後
@@ -156,6 +163,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 		[SerializeField]
 		private float _voxelUnitScale = 1f;
+
+		public float voxelUnitScale => _voxelUnitScale;
 
 		[SerializeField]
 		private Voxel[] _voxels;

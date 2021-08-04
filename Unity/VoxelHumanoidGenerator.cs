@@ -32,16 +32,60 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private VoxelVertexGenerator.Voxel[,,] _voxels;
 
+		private Vector3[,,] _voxelPositionMap;
+
+		private Dictionary<HumanBodyBones, List<VoxelVertexGenerator.Voxel>> _voxelBoneDict;
+
+		private Dictionary<HumanBodyBones, Transform> _boneDict;
+
 		private void Awake()
 		{
 			var size = _vertexGenerator.voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
 			_voxels = new VoxelVertexGenerator.Voxel[size.x, size.y, size.z];
+			_voxelPositionMap = new Vector3[size.x, size.y, size.z];
+
+			_voxelBoneDict = new Dictionary<HumanBodyBones, List<VoxelVertexGenerator.Voxel>>();
+			_boneDict = new Dictionary<HumanBodyBones, Transform>();
 
 			foreach (var v in _vertexGenerator.voxels)
 			{
 				_voxelActive[v.x, v.y, v.z] = true;
 				_voxels[v.x, v.y, v.z] = v;
+
+				if (v.bone != HumanBodyBones.LastBone)
+				{
+					if (!_voxelBoneDict.ContainsKey(v.bone))
+					{
+						_voxelBoneDict.Add(v.bone, new List<VoxelVertexGenerator.Voxel>() { v });
+					}
+					else
+					{
+						_voxelBoneDict[v.bone].Add(v);
+					}
+
+					if (!_boneDict.ContainsKey(v.bone))
+					{
+						var bone = _animator.GetBoneTransform(v.bone);
+
+						if (bone == null)
+						{
+							Debug.LogError(v.bone + "が見つかりませんでした");
+						}
+						else
+						{
+							_boneDict.Add(v.bone, bone);
+						}
+					}
+
+					if (_boneDict.TryGetValue(v.bone, out var myBone))
+					{
+						var wp = _rootBone.TransformPoint(v.positionFromCenter);
+						var lp = myBone.InverseTransformPoint(wp);
+
+						_voxelPositionMap[v.x, v.y, v.z] = lp;
+					}
+				}
 			}
 		}
 
@@ -249,6 +293,26 @@ namespace TakashiCompany.Unity.VoxReader
 			hd.hasTranslationDoF = false;
 
 			return AvatarBuilder.BuildHumanAvatar(_rootBone.gameObject, hd);
+		}
+
+		private void OnDrawGizmos()
+		{
+			// if (_voxelPositionMap != null)
+			// {
+			// 	Gizmos.color = Color.red;
+
+			// 	foreach (var v in _vertexGenerator.voxels)
+			// 	{
+			// 		var p = _voxelPositionMap[v.x, v.y, v.z];
+
+			// 		if (_boneDict.TryGetValue(v.bone, out var bone))
+			// 		{
+			// 			var wp = bone.TransformPoint(p);
+
+			// 			Gizmos.DrawWireSphere(wp, _vertexGenerator.voxelUnitScale / 2);
+			// 		}
+			// 	}
+			// }
 		}
 
 	}
