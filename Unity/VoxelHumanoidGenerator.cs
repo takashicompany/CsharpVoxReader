@@ -22,6 +22,59 @@ namespace TakashiCompany.Unity.VoxReader
 		[SerializeField]
 		private Transform[] _bones;
 
+		[SerializeField]
+		private Mesh _mesh;
+
+		[SerializeField]
+		private bool _withCollider;
+
+		private bool[,,] _voxelActive;
+
+		private VoxelVertexGenerator.Voxel[,,] _voxels;
+
+		private void Awake()
+		{
+			var size = _vertexGenerator.voxelSize;
+			_voxelActive = new bool[size.x, size.y, size.z];
+			_voxels = new VoxelVertexGenerator.Voxel[size.x, size.y, size.z];
+
+			foreach (var v in _vertexGenerator.voxels)
+			{
+				_voxelActive[v.x, v.y, v.z] = true;
+				_voxels[v.x, v.y, v.z] = v;
+			}
+		}
+
+		private void Start()
+		{
+			_vertexGenerator.voxelSize.Foreach((x, y, z) =>
+			{
+				if (Random.Range(0, 4) == 0)
+				{
+					_voxelActive[x, y, z] = false;
+				}
+			});
+
+			UpdateMesh();
+		}
+
+		private void UpdateMesh()
+		{
+			var tris = new List<int>();
+
+			foreach (var v in _vertexGenerator.voxels)
+			{
+				var active = _voxelActive[v.x, v.y, v.z];
+
+				if (active)
+				{
+					tris.AddRange(v.GetTriangleIndices());
+				}
+			}
+
+			_mesh.triangles = tris.ToArray();
+		}
+
 		[ContextMenu("generate all")]
 		private void　Generate()
 		{
@@ -39,7 +92,7 @@ namespace TakashiCompany.Unity.VoxReader
 				boneIndexDict[bn] = i;
 			}
 
-			var mesh = _vertexGenerator.GenerateMesh();
+			_mesh = _vertexGenerator.GenerateMesh();
 
 			var boneWeights = new List<BoneWeight>();
 
@@ -55,7 +108,7 @@ namespace TakashiCompany.Unity.VoxReader
 				}
 			}
 
-			mesh.boneWeights = boneWeights.ToArray();
+			_mesh.boneWeights = boneWeights.ToArray();
 
 			Matrix4x4[] bindPoses = new Matrix4x4[_bones.Length];
 
@@ -65,14 +118,14 @@ namespace TakashiCompany.Unity.VoxReader
 				bindPoses[i] = bone.worldToLocalMatrix * transform.localToWorldMatrix;
 			}
 
-			mesh.bindposes = bindPoses;
+			_mesh.bindposes = bindPoses;
 
-			mesh.RecalculateNormals();
-			mesh.RecalculateBounds();
-			mesh.RecalculateTangents();
+			_mesh.RecalculateNormals();
+			_mesh.RecalculateBounds();
+			_mesh.RecalculateTangents();
 
 			_renderer.bones = _bones;
-			_renderer.sharedMesh = mesh;
+			_renderer.sharedMesh = _mesh;
 
 			var avatar = GenerateAvatar();
 
@@ -97,9 +150,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			_bones = null;
 
-			var v2m = _vertexGenerator;
-
-			var boundsDict = _vertexGenerator.BuildBoundsDict();
+			var boundsDict = this._vertexGenerator.BuildBoundsDict();
 
 			var boneDict = new Dictionary<HumanBodyBones, Transform>();
 			var bones = new List<Transform>();
@@ -118,6 +169,14 @@ namespace TakashiCompany.Unity.VoxReader
 				{
 					go.transform.position = _rootBone.TransformPoint(bounds.GetBoneConnectionPoint(boneName));
 					go.transform.SetParent(parent);
+					
+					if (_withCollider)
+					{
+						var collider = go.AddComponent<BoxCollider>();
+						var cb = new Bounds(go.transform.InverseTransformPoint(bounds.center), bounds.size);
+						collider.center = cb.center;
+						collider.size = cb.size;
+					}
 				}
 				else
 				{

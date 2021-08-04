@@ -7,6 +7,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 	public static partial class Extension
 	{
+
 		public static void Foreach(this Vector3Int self, System.Action<Vector3Int> callback)
 		{
 			for (var x = 0; x < self.x; x++)
@@ -16,6 +17,20 @@ namespace TakashiCompany.Unity.VoxReader
 					for (var z = 0; z < self.z; z++)
 					{
 						callback?.Invoke(new Vector3Int(x, y, z));
+					}
+				}
+			}
+		}
+
+		public static void Foreach(this Vector3Int self, System.Action<int, int, int> callback)
+		{
+			for (var x = 0; x < self.x; x++)
+			{
+				for (var y = 0; y < self.y; y++)
+				{
+					for (var z = 0; z < self.z; z++)
+					{
+						callback?.Invoke(x, y, z);
 					}
 				}
 			}

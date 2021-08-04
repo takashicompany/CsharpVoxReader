@@ -70,6 +70,12 @@ namespace TakashiCompany.Unity.VoxReader
 			[SerializeField]
 			private Vector3Int _position;
 
+			public Vector3Int position => _position;
+
+			public int x => position.x;
+			public int y => position.y;
+			public int z => position.z;
+
 			[SerializeField]
 			private Face[] _faces;
 
@@ -158,6 +164,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 		[SerializeField]
 		private Vector3Int _voxelSize;
+
+		public Vector3Int voxelSize => _voxelSize;
 
 #if UNITY_EDITOR
 
