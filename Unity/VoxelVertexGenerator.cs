@@ -20,15 +20,11 @@ namespace TakashiCompany.Unity.VoxReader
 
 			public int index => _index;
 
-			public Vertex(Vector3 position)
+			public Vertex(Vector3 position, int index)
 			{
 				_position = position;
-			}
-
-			public void SetIndex(int index)
-			{
 				_index = index;
-			}	
+			}
 		}
 		
 		[System.Serializable]
@@ -39,28 +35,51 @@ namespace TakashiCompany.Unity.VoxReader
 
 			public Vertex[] vertice => _vertice;
 
-			private static readonly int[] _triangleIndices = new int[] { 0, 1, 2, 0, 2, 3};
+			private static readonly int[] _triangleIndexOrder = new int[] { 0, 1, 2, 0, 2, 3};
 
-			public Face(params Vector3[] points)
+			private int[] _triangleIndices;
+
+			public Face(Vector3 a, Vector3 b, Vector3 c, Vector3 d, int startIndex)
 			{
-				Debug.Assert(points.Length == 4, "頂点の数が不正です。:" + points.Length);
-
-				_vertice = new Vertex[points.Length];
-
-				for (int i = 0; i < points.Length; i++)
-				{
-					var v = new Vertex(points[i]);
-					
-					_vertice[i] = v;
-				}
+				_vertice = new Vertex[]{
+					new Vertex(a, startIndex + 0),
+					new Vertex(b, startIndex + 1),
+					new Vertex(c, startIndex + 2),
+					new Vertex(d, startIndex + 3)
+				};
 			}
+
+			// public void FixTriangleIndices()
+			// {
+			// 	_triangleIndices = new int[]
+			// 	{
+			// 		_vertice[_triangleIndexOrder[0]].index,
+			// 		_vertice[_triangleIndexOrder[1]].index,
+			// 		_vertice[_triangleIndexOrder[2]].index,
+			// 		_vertice[_triangleIndexOrder[3]].index,
+			// 		_vertice[_triangleIndexOrder[4]].index,
+			// 		_vertice[_triangleIndexOrder[5]].index
+			// 	};
+			// }
 
 			public IEnumerable<int> GetTriangleIndices()
 			{
-				foreach (var i in _triangleIndices)
+				// foreach (var i in _triangleIndexOrder)
+				// {
+				// 	yield return vertice[i].index;
+				// }
+
+				_triangleIndices = new int[]
 				{
-					yield return vertice[i].index;
-				}
+					_vertice[_triangleIndexOrder[0]].index,
+					_vertice[_triangleIndexOrder[1]].index,
+					_vertice[_triangleIndexOrder[2]].index,
+					_vertice[_triangleIndexOrder[3]].index,
+					_vertice[_triangleIndexOrder[4]].index,
+					_vertice[_triangleIndexOrder[5]].index
+				};
+
+				return _triangleIndices;
 			}
 		}
 		
@@ -90,8 +109,12 @@ namespace TakashiCompany.Unity.VoxReader
 			private HumanBodyBones _bone;
 
 			public HumanBodyBones bone => _bone;
+
+			private Vertex[] _vertice;
+			private Vector3[] _vertexPoints;
+			private int[] _triangleIndices;
 			
-			public Voxel(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone)
+			public Voxel(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
 			{
 				_voxelPosition = position;
 
@@ -110,49 +133,103 @@ namespace TakashiCompany.Unity.VoxReader
 				var rub = new Vector3(max.x, max.y, min.z);	// 右上後
 				var ruf = new Vector3(max.x, max.y, max.z);	// 右上前
 				
-				var left = new Face(luf, lub, ldb, ldf);
-				var right = new Face(rub, ruf, rdf, rdb);
-				var down = new Face(ldb, rdb, rdf, ldf);
-				var up = new Face(luf, ruf, rub, lub);
-				var back = new Face(lub, rub, rdb, ldb);
-				var forward = new Face(ruf, luf, ldf, rdf);
+				var left = new Face(luf, lub, ldb, ldf, startIndex + 0);
+				var right = new Face(rub, ruf, rdf, rdb, startIndex + 4);
+				var down = new Face(ldb, rdb, rdf, ldf, startIndex + 8);
+				var up = new Face(luf, ruf, rub, lub, startIndex + 12);
+				var back = new Face(lub, rub, rdb, ldb, startIndex + 16);
+				var forward = new Face(ruf, luf, ldf, rdf, startIndex + 20);
 
-				_faces = new Face[] { left, right, down, up, back, forward };
+				_faces = new Face[]{ left, right, down, up, back, forward };
 
 				_bone = bone;
 			}
 
-			public IEnumerable<Vertex> GetVertex()
+			public void CreateCache()
 			{
+				if (_vertice != null && _vertexPoints != null && _triangleIndices != null)
+				{
+					return;
+				}
+
+				// 事前に値を持っておく
+				_vertice = new Vertex[_faces.Length * 4];
+				_vertexPoints = new Vector3[_faces.Length * 4];
+				_triangleIndices = new int[_faces.Length * 6];
+
+				var vertexIndex = 0;
+				var triangleIndex = 0;
+
 				foreach (var f in _faces)
 				{
 					foreach (var v in f.vertice)
 					{
-						yield return v;
+						_vertice[vertexIndex] = v;
+						_vertexPoints[vertexIndex] = v.position;
+						vertexIndex++;
+					}
+
+					foreach (var t in f.GetTriangleIndices())
+					{
+						_triangleIndices[triangleIndex] = t;
+						triangleIndex++;
 					}
 				}
+
+			}
+
+			public IEnumerable<Vertex> GetVertex()
+			{
+				// if (_vertice == null)
+				// {
+				// 	CreateCache();
+				// }
+
+				return _vertice;
+
+				// foreach (var f in _faces)
+				// {
+				// 	foreach (var v in f.vertice)
+				// 	{
+				// 		yield return v;
+				// 	}
+				// }
 			}
 
 			public IEnumerable<Vector3> GetVertexPoints()
 			{
-				foreach (var f in _faces)
-				{
-					foreach (var v in f.vertice)
-					{
-						yield return v.position;
-					}
-				}
+				// if (_vertexPoints == null)
+				// {
+				// 	CreateCache();
+				// }
+
+				return _vertexPoints;
+
+				// foreach (var f in _faces)
+				// {
+				// 	foreach (var v in f.vertice)
+				// 	{
+				// 		yield return v.position;
+				// 	}
+				// }
 			}
 
 			public IEnumerable<int> GetTriangleIndices()
 			{
-				foreach (var f in _faces)
-				{
-					foreach (var ti in f.GetTriangleIndices())
-					{
-						yield return ti;
-					}
-				}
+				// if (_triangleIndices == null)
+				// {
+				// 	CreateCache();
+				// }
+
+				return _triangleIndices;
+				
+				// foreach (var f in _faces)
+				// {
+				// 	foreach (var ti in f.GetTriangleIndices())
+				// 	{
+				// 		yield return ti;
+				// 	}
+				// }
 			}
 		}
 
@@ -212,15 +289,14 @@ namespace TakashiCompany.Unity.VoxReader
 				if (d > 0)
 				{
 					var bone = bones[v3.x, v3.y, v3.z].HasValue ? bones[v3.x, v3.y, v3.z].Value : HumanBodyBones.LastBone;
-					var voxel = new Voxel(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone);
+					var voxel = new Voxel(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone, vertexIndex);
 					
 					voxels.Add(voxel);
 
-					foreach (var v in voxel.GetVertex())
-					{
-						v.SetIndex(vertexIndex);
-						vertexIndex++;
-					}
+					vertexIndex += 24;
+
+					voxel.CreateCache();
+
 				}
 			});
 
