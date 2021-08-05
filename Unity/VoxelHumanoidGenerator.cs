@@ -38,12 +38,15 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private Dictionary<HumanBodyBones, Transform> _boneDict;
 
+		private Transform[,,] _boneMap;
+
 		private void Awake()
 		{
 			var size = _vertexGenerator.voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
 			_voxels = new VoxelVertexGenerator.Voxel[size.x, size.y, size.z];
 			_voxelPositionMap = new Vector3[size.x, size.y, size.z];
+			_boneMap = new Transform[size.x, size.y, size.z];
 
 			_voxelBoneDict = new Dictionary<HumanBodyBones, List<VoxelVertexGenerator.Voxel>>();
 			_boneDict = new Dictionary<HumanBodyBones, Transform>();
@@ -84,6 +87,8 @@ namespace TakashiCompany.Unity.VoxReader
 						var lp = myBone.InverseTransformPoint(wp);
 
 						_voxelPositionMap[v.x, v.y, v.z] = lp;
+
+						_boneMap[v.x, v.y, v.z] = myBone;
 					}
 				}
 			}
@@ -91,15 +96,15 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private void Start()
 		{
-			_vertexGenerator.voxelSize.Foreach((x, y, z) =>
-			{
-				if (Random.Range(0, 4) == 0)
-				{
-					_voxelActive[x, y, z] = false;
-				}
-			});
+			// _vertexGenerator.voxelSize.Foreach((x, y, z) =>
+			// {
+			// 	if (Random.Range(0, 4) == 0)
+			// 	{
+			// 		_voxelActive[x, y, z] = false;
+			// 	}
+			// });
 
-			UpdateMesh();
+			// UpdateMesh();
 		}
 
 		private void UpdateMesh()
@@ -293,6 +298,50 @@ namespace TakashiCompany.Unity.VoxReader
 			hd.hasTranslationDoF = false;
 
 			return AvatarBuilder.BuildHumanAvatar(_rootBone.gameObject, hd);
+		}
+
+		private bool IsActiveVoxel(int x, int y, int z)
+		{
+			return _voxelActive[x, y, z];
+		}
+
+		private Vector3 GetVoxelWorldPosition(int x, int y, int z)
+		{
+			var pos = _voxelPositionMap[x, y, z];
+
+			var bone = _boneMap[x, y, z];
+
+			var worldPos = bone.TransformPoint(pos);
+
+			return worldPos;
+		}
+
+		private void Damage(Vector3 position, float radius)
+		{
+			foreach (var v in _vertexGenerator.voxels)
+			{
+				if (IsActiveVoxel(v.x, v.y, v.z))
+				{
+					var pos = GetVoxelWorldPosition(v.x, v.y, v.z);
+
+					if (Vector3.Distance(position, pos) <= radius)
+					{
+						_voxelActive[v.x, v.y, v.z] = false;
+					}
+				}
+			}
+
+			UpdateMesh();
+		}
+
+		private void OnCollisionEnter(Collision collision)
+		{
+			if (collision.collider.TryGetComponent<Sample.Bullet>(out var bullet))
+			{
+				var contact = collision.contacts[0];
+
+				Damage(contact.point, 0.5f);
+			}
 		}
 
 		private void OnDrawGizmos()
