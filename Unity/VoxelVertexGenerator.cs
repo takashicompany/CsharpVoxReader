@@ -176,13 +176,15 @@ namespace TakashiCompany.Unity.VoxReader
 
 		public Vector3Int voxelSize => _voxelSize;
 
-#if UNITY_EDITOR
+
 
 		[ContextMenu("Load .vox")]
 		public void LoadVoxFile()
 		{
-			var path = UnityEditor.AssetDatabase.GetAssetPath(_voxFile);
-
+			var path = "";
+#if UNITY_EDITOR
+			path = UnityEditor.AssetDatabase.GetAssetPath(_voxFile);
+#endif
 			var loader = new VoxLoader();
 
 			var r = new CsharpVoxReader.VoxReader(path, loader);
@@ -191,7 +193,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			GenerateVoxel(loader.voxelMap, loader.voxelBoneMap, _voxelUnitScale);
 		}
-#endif
+
 
 		private void GenerateVoxel(byte[,,] data, HumanBodyBones?[,,] bones, float unit)
 		{
