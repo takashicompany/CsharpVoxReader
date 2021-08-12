@@ -40,6 +40,9 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private Transform[,,] _boneMap;
 
+		[SerializeField]
+		private ParticleSystem _damage;
+
 		private void Awake()
 		{
 			var size = _vertexGenerator.voxelSize;
@@ -111,7 +114,7 @@ namespace TakashiCompany.Unity.VoxReader
 		private void UpdateMesh()
 		{
 			var tris = new List<int>();
-
+			
 			foreach (var v in _vertexGenerator.voxels)
 			{
 				var active = _voxelActive[v.x, v.y, v.z];
@@ -319,6 +322,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private void Damage(Vector3 position, float radius)
 		{
+			// var list = new List<Vector3>();
+
 			foreach (var v in _vertexGenerator.voxels)
 			{
 				if (IsActiveVoxel(v.x, v.y, v.z))
@@ -328,6 +333,12 @@ namespace TakashiCompany.Unity.VoxReader
 					if (Vector3.Distance(position, pos) <= radius)
 					{
 						_voxelActive[v.x, v.y, v.z] = false;
+						var p = GetVoxelWorldPosition(v.x, v.y, v.z);
+						var ep = new ParticleSystem.EmitParams();
+						ep.position = p;
+						ep.velocity = (p - position).normalized * Random.Range(1, 2);
+						_damage.Emit(ep, 1);
+						// list.Add(p);
 					}
 				}
 			}
