@@ -22,7 +22,7 @@ namespace TakashiCompany.Unity.VoxReader.Sample
 
 		private void OnCollisionEnter(Collision collision)
 		{
-			var human = collision.collider.GetComponentInParent<VoxelHumanoidGenerator>();
+			var human = collision.collider.GetComponentInParent<VoxelSkinnedMeshHumanoid>();
 
 			if (human != null)
 			{

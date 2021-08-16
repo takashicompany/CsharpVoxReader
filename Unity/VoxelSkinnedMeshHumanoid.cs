@@ -5,7 +5,7 @@ namespace TakashiCompany.Unity.VoxReader
 	using System.Linq;
 	using UnityEngine;
 
-	public class VoxelHumanoidGenerator : MonoBehaviour
+	public class VoxelSkinnedMeshHumanoid : MonoBehaviour
 	{
 		[SerializeField]
 		private VoxelMeshGenerator<SimpleVoxel> _vertexGenerator;
