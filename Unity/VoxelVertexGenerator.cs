@@ -84,7 +84,7 @@ namespace TakashiCompany.Unity.VoxReader
 		}
 		
 		[System.Serializable]
-		public class Voxel
+		public class Voxel : IVoxel
 		{
 			[SerializeField]
 			private Vector3Int _voxelPosition;
@@ -115,6 +115,11 @@ namespace TakashiCompany.Unity.VoxReader
 			private int[] _triangleIndices;
 			
 			public Voxel(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
+			{
+				Init(position, positionFromCenter, unitPerSize, bone, startIndex);
+			}
+
+			public void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
 			{
 				_voxelPosition = position;
 

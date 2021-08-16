@@ -17,6 +17,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 		void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex);
 
+		void CreateCache();
+
 		IEnumerable<Vector3> GetVertexPoints();
 
 		IEnumerable<int> GetTriangleIndices();
