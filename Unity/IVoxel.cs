@@ -95,6 +95,8 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			var triIndex = 6 * (index / 4);
 
+			var myStartIndex = startIndex + index;
+
 			_vertexIndices[index] = startIndex + index;
 			_vertice[index++] = a;
 			
@@ -108,12 +110,12 @@ namespace TakashiCompany.Unity.VoxReader
 			_vertice[index++] = d;
 
 			
-			_triangleIndices[triIndex++] = startIndex + 0;
-			_triangleIndices[triIndex++] = startIndex + 1;
-			_triangleIndices[triIndex++] = startIndex + 2;
-			_triangleIndices[triIndex++] = startIndex + 0;
-			_triangleIndices[triIndex++] = startIndex + 2;
-			_triangleIndices[triIndex++] = startIndex + 3;
+			_triangleIndices[triIndex++] = myStartIndex + 0;
+			_triangleIndices[triIndex++] = myStartIndex + 1;
+			_triangleIndices[triIndex++] = myStartIndex + 2;
+			_triangleIndices[triIndex++] = myStartIndex + 0;
+			_triangleIndices[triIndex++] = myStartIndex + 2;
+			_triangleIndices[triIndex++] = myStartIndex + 3;
 		}
 
 		public void CreateCache()
