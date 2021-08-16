@@ -8,7 +8,7 @@ namespace TakashiCompany.Unity.VoxReader
 	public class VoxelMeshGenerator : MonoBehaviour
 	{
 		[SerializeField]
-		private VoxelVertexGenerator _vertexGenerator;
+		private VoxelVertexGenerator<SimpleVoxel> _vertexGenerator;
 
 		[SerializeField]
 		private MeshFilter _meshFilter;

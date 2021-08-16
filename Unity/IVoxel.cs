@@ -15,6 +15,8 @@ namespace TakashiCompany.Unity.VoxReader
 		int y { get; }
 		int z { get; }
 
+		void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex);
+
 		void CreateCache();
 
 		IEnumerable<Vector3> GetVertexPoints();
@@ -56,7 +58,17 @@ namespace TakashiCompany.Unity.VoxReader
 		public int y => voxelPosition.y;
 		public int z => voxelPosition.z;
 
+		public SimpleVoxel()
+		{
+			
+		}
+
 		public SimpleVoxel(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
+		{
+			Init(position, positionFromCenter, unitPerSize, bone, startIndex);
+		}
+
+		public void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
 		{
 			_voxelPosition = position;
 

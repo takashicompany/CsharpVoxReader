@@ -5,9 +5,10 @@ namespace TakashiCompany.Unity.VoxReader
 	using System.Linq;
 	using UnityEngine;
 
-	public class VoxelVertexGenerator : MonoBehaviour
+	[System.Serializable]
+	public class VoxelVertexGenerator<T> where T : IVoxel, new()
 	{
-		
+
 #if UNITY_EDITOR
 		[SerializeField]
 		private Object _voxFile;
@@ -19,15 +20,14 @@ namespace TakashiCompany.Unity.VoxReader
 		public float voxelUnitScale => _voxelUnitScale;
 
 		[SerializeField]
-		private SimpleVoxel[] _voxels;
+		private T[] _voxels;
 
-		public IVoxel[] voxels => _voxels;
+		public T[] voxels => _voxels;
 
 		[SerializeField]
 		private Vector3Int _voxelSize;
 
 		public Vector3Int voxelSize => _voxelSize;
-
 
 
 		[ContextMenu("Load .vox")]
@@ -55,7 +55,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			var offset = new Vector3((unit * _voxelSize.x) / 2f - unitHalf, - unitHalf, (unit * _voxelSize.z) / 2f - unitHalf) * -1;	// 0.5引いているのは、多分ボクセルの中心点の分
 
-			var voxels = new List<SimpleVoxel>();
+			var voxels = new List<T>();
 
 			var vertexIndex = 0;
 
@@ -64,7 +64,8 @@ namespace TakashiCompany.Unity.VoxReader
 				if (d > 0)
 				{
 					var bone = bones[v3.x, v3.y, v3.z].HasValue ? bones[v3.x, v3.y, v3.z].Value : HumanBodyBones.LastBone;
-					var voxel = new SimpleVoxel(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone, vertexIndex);
+					var voxel = new T();
+					voxel.Init(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone, vertexIndex);
 					
 					voxels.Add(voxel);
 
@@ -100,13 +101,13 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			var dict = new Dictionary<HumanBodyBones, Bounds>();
 			
-			var boneTypes = new Dictionary<HumanBodyBones, List<SimpleVoxel>>();
+			var boneTypes = new Dictionary<HumanBodyBones, List<IVoxel>>();
 
 			foreach (var v in _voxels)
 			{
 				if (!boneTypes.ContainsKey(v.bone))
 				{
-					boneTypes.Add(v.bone, new List<SimpleVoxel>() { v });
+					boneTypes.Add(v.bone, new List<IVoxel>() { v });
 				}
 				else
 				{

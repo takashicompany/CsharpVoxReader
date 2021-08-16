@@ -8,7 +8,7 @@ namespace TakashiCompany.Unity.VoxReader
 	public class VoxelHumanoidGenerator : MonoBehaviour
 	{
 		[SerializeField]
-		private VoxelVertexGenerator _vertexGenerator;
+		private VoxelVertexGenerator<SimpleVoxel> _vertexGenerator;
 
 		[SerializeField]
 		private Animator _animator;
