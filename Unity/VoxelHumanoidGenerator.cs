@@ -151,7 +151,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			foreach (var v in _vertexGenerator.voxels)
 			{
-				foreach (var p in v.GetVertex())
+				foreach (var p in v.GetVertexPoints())
 				{
 					var index = boneIndexDict[v.bone];
 					var bw = new BoneWeight();
