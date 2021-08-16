@@ -68,12 +68,12 @@ namespace TakashiCompany.Unity.VoxReader
 			return vertices.Select(v => v.position).GetBounds();
 		}
 
-		public static Bounds GetBounds(this IEnumerable<VoxelVertexGenerator.Voxel> vertice)
+		public static Bounds GetBounds(this IEnumerable<IVoxel> vertice)
 		{
 			return vertice.GetPoints().GetBounds();
 		}
 
-		public static IEnumerable<Vector3> GetPoints(this IEnumerable<VoxelVertexGenerator.Voxel> vertice)
+		public static IEnumerable<Vector3> GetPoints(this IEnumerable<IVoxel> vertice)
 		{
 			foreach (var v in vertice)
 			{
