@@ -84,7 +84,7 @@ namespace TakashiCompany.Unity.VoxReader
 		}
 		
 		[System.Serializable]
-		public class Voxel : IVoxel
+		private class Voxel : IVoxel
 		{
 			[SerializeField]
 			private Vector3Int _voxelPosition;
@@ -251,7 +251,7 @@ namespace TakashiCompany.Unity.VoxReader
 		[SerializeField]
 		private Voxel[] _voxels;
 
-		public Voxel[] voxels => _voxels;
+		public IVoxel[] voxels => _voxels;
 
 		[SerializeField]
 		private Vector3Int _voxelSize;

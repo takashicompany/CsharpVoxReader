@@ -30,11 +30,11 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private bool[,,] _voxelActive;
 
-		private VoxelVertexGenerator.Voxel[,,] _voxels;
+		private IVoxel[,,] _voxels;
 
 		private Vector3[,,] _voxelPositionMap;
 
-		private Dictionary<HumanBodyBones, List<VoxelVertexGenerator.Voxel>> _voxelBoneDict;
+		private Dictionary<HumanBodyBones, List<IVoxel>> _voxelBoneDict;
 
 		private Dictionary<HumanBodyBones, Transform> _boneDict;
 
@@ -47,11 +47,11 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			var size = _vertexGenerator.voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
-			_voxels = new VoxelVertexGenerator.Voxel[size.x, size.y, size.z];
+			_voxels = new IVoxel[size.x, size.y, size.z];
 			_voxelPositionMap = new Vector3[size.x, size.y, size.z];
 			_boneMap = new Transform[size.x, size.y, size.z];
 
-			_voxelBoneDict = new Dictionary<HumanBodyBones, List<VoxelVertexGenerator.Voxel>>();
+			_voxelBoneDict = new Dictionary<HumanBodyBones, List<IVoxel>>();
 			_boneDict = new Dictionary<HumanBodyBones, Transform>();
 
 			foreach (var v in _vertexGenerator.voxels)
@@ -64,7 +64,7 @@ namespace TakashiCompany.Unity.VoxReader
 				{
 					if (!_voxelBoneDict.ContainsKey(v.bone))
 					{
-						_voxelBoneDict.Add(v.bone, new List<VoxelVertexGenerator.Voxel>() { v });
+						_voxelBoneDict.Add(v.bone, new List<IVoxel>() { v });
 					}
 					else
 					{
