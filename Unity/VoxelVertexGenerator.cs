@@ -6,7 +6,7 @@ namespace TakashiCompany.Unity.VoxReader
 	using UnityEngine;
 
 	[System.Serializable]
-	public class VoxelVertexGenerator<T> where T : IVoxel, new()
+	public class VoxelMeshGenerator<T> where T : IVoxel, new()
 	{
 
 #if UNITY_EDITOR
@@ -31,7 +31,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 
 		[ContextMenu("Load .vox")]
-		public void LoadVoxFile()
+		private VoxLoader LoadVoxFile()
 		{
 			var path = "";
 #if UNITY_EDITOR
@@ -43,11 +43,16 @@ namespace TakashiCompany.Unity.VoxReader
 
 			r.Read();
 
-			GenerateVoxel(loader.voxelMap, loader.voxelBoneMap, _voxelUnitScale);
+			return loader;
 		}
 
+		public void GenerateVoxel(bool isSingle)
+		{
+			var result = LoadVoxFile();
+			GenerateVoxel(result.voxelMap, result.voxelBoneMap, _voxelUnitScale, isSingle);
+		}
 
-		private void GenerateVoxel(byte[,,] data, HumanBodyBones?[,,] bones, float unit)
+		private void GenerateVoxel(byte[,,] data, HumanBodyBones?[,,] bones, float unit, bool isSingle)
 		{
 			_voxelSize = new Vector3Int(data.GetLength(0), data.GetLength(1), data.GetLength(2));
 			
@@ -57,7 +62,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 			var voxels = new List<T>();
 
-			var vertexIndex = 0;
+			var totalVertexIndex = 0;
+			var vertexIndexDict = new Dictionary<HumanBodyBones, int>();
 
 			data.Foreach((v3, d) =>
 			{
@@ -65,14 +71,27 @@ namespace TakashiCompany.Unity.VoxReader
 				{
 					var bone = bones[v3.x, v3.y, v3.z].HasValue ? bones[v3.x, v3.y, v3.z].Value : HumanBodyBones.LastBone;
 					var voxel = new T();
-					voxel.Init(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone, vertexIndex);
+
+					var vertexIndex = totalVertexIndex;
+
+					if (!isSingle && !vertexIndexDict.TryGetValue(bone, out vertexIndex))
+					{
+						vertexIndexDict.Add(bone, 0);
+						vertexIndex = 0;
+					}
+
+					voxel.Init(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone, totalVertexIndex);
 					
 					voxels.Add(voxel);
 
-					vertexIndex += 24;
+					totalVertexIndex += 24;
+
+					if (!isSingle)
+					{
+						vertexIndexDict[bone] += 24;
+					}
 
 					voxel.CreateCache();
-
 				}
 			});
 
@@ -95,6 +114,47 @@ namespace TakashiCompany.Unity.VoxReader
 			mesh.triangles = tris.ToArray();
 
 			return mesh;
+		}
+
+		public Dictionary<HumanBodyBones, Mesh> GenerateMeshDict()
+		{
+			var vertexDict = new Dictionary<HumanBodyBones, List<Vector3>>();
+			var triangleDict = new Dictionary<HumanBodyBones, List<int>>();
+
+			foreach (var v in voxels)
+			{
+				if (!vertexDict.TryGetValue(v.bone, out var vertice))
+				{
+					vertice = new List<Vector3>();
+					vertexDict.Add(v.bone, vertice);
+				}
+				vertice.AddRange(v.GetVertexPoints());
+				
+
+				if (!triangleDict.TryGetValue(v.bone, out var indices))
+				{
+					indices = new List<int>();
+					triangleDict.Add(v.bone, indices);
+				}
+				indices.AddRange(v.GetTriangleIndices());
+			}
+
+			var meshDict = new Dictionary<HumanBodyBones, Mesh>();
+
+			foreach (var kvp in vertexDict)
+			{
+				var bone = kvp.Key;
+				var vertice = kvp.Value;
+				var triangleIndices = triangleDict[bone];
+
+				var mesh = new Mesh();
+				mesh.vertices = vertice.ToArray();
+				mesh.triangles = triangleIndices.ToArray();
+
+				meshDict.Add(bone, mesh);
+			}
+
+			return meshDict;
 		}
 
 		public Dictionary<HumanBodyBones, Bounds> BuildBoundsDict()

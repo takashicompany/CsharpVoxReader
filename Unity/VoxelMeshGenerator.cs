@@ -8,7 +8,7 @@ namespace TakashiCompany.Unity.VoxReader
 	public class VoxelMeshGenerator : MonoBehaviour
 	{
 		[SerializeField]
-		private VoxelVertexGenerator<SimpleVoxel> _vertexGenerator;
+		private VoxelMeshGenerator<SimpleVoxel> _vertexGenerator;
 
 		[SerializeField]
 		private MeshFilter _meshFilter;
@@ -16,7 +16,7 @@ namespace TakashiCompany.Unity.VoxReader
 		[ContextMenu("generate")]
 		private void Generate()
 		{
-			_vertexGenerator.LoadVoxFile();
+			_vertexGenerator.GenerateVoxel(true);
 			var mesh = _vertexGenerator.GenerateMesh();
 
 			_meshFilter.sharedMesh = mesh;

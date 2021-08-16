@@ -8,7 +8,7 @@ namespace TakashiCompany.Unity.VoxReader
 	public class VoxelHumanoidGenerator : MonoBehaviour
 	{
 		[SerializeField]
-		private VoxelVertexGenerator<SimpleVoxel> _vertexGenerator;
+		private VoxelMeshGenerator<SimpleVoxel> _vertexGenerator;
 
 		[SerializeField]
 		private Animator _animator;
@@ -131,7 +131,7 @@ namespace TakashiCompany.Unity.VoxReader
 		[ContextMenu("generate all")]
 		private void　Generate()
 		{
-			_vertexGenerator.LoadVoxFile();
+			_vertexGenerator.GenerateVoxel(true);
 
 			GenerateBones();
 
