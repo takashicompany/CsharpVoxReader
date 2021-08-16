@@ -8,7 +8,7 @@ namespace TakashiCompany.Unity.VoxReader
 	public class VoxelVertexGenerator : MonoBehaviour
 	{
 		[System.Serializable]
-		public class Vertex
+		private class Vertex
 		{
 			[SerializeField]
 			private Vector3 _position;
@@ -28,7 +28,7 @@ namespace TakashiCompany.Unity.VoxReader
 		}
 		
 		[System.Serializable]
-		public class Face
+		private class Face
 		{
 			[SerializeField]
 			private Vertex[] _vertice;
@@ -103,7 +103,7 @@ namespace TakashiCompany.Unity.VoxReader
 			[SerializeField]
 			private Face[] _faces;
 
-			public Face[] faces => _faces;
+			private Face[] faces => _faces;
 
 			[SerializeField]
 			private HumanBodyBones _bone;
