@@ -14,7 +14,7 @@ namespace TakashiCompany.Unity.VoxReader
 		int x { get; }
 		int y { get; }
 		int z { get; }
-		
+
 		void CreateCache();
 
 		IEnumerable<Vector3> GetVertexPoints();
@@ -118,7 +118,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 		public void CreateCache()
 		{
-			throw new System.NotImplementedException();
+			//throw new System.NotImplementedException();
 		}
 
 		public IEnumerable<int> GetTriangleIndices()
