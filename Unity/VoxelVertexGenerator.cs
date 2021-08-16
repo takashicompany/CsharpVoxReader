@@ -116,11 +116,6 @@ namespace TakashiCompany.Unity.VoxReader
 			
 			public Voxel(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
 			{
-				Init(position, positionFromCenter, unitPerSize, bone, startIndex);
-			}
-
-			public void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
-			{
 				_voxelPosition = position;
 
 				_positionFromCenter = positionFromCenter;

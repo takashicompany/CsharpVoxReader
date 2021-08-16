@@ -14,9 +14,7 @@ namespace TakashiCompany.Unity.VoxReader
 		int x { get; }
 		int y { get; }
 		int z { get; }
-
-		void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex);
-
+		
 		void CreateCache();
 
 		IEnumerable<Vector3> GetVertexPoints();
@@ -131,11 +129,6 @@ namespace TakashiCompany.Unity.VoxReader
 		public IEnumerable<Vector3> GetVertexPoints()
 		{
 			return _vertice;
-		}
-
-		public void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex)
-		{
-			throw new System.NotImplementedException();
 		}
 	}
 
