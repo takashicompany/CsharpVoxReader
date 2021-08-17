@@ -8,6 +8,9 @@ namespace TakashiCompany.Unity.VoxReader
 	public class VoxelMeshHumanoid : VoxelHumanoid
 	{
 		[SerializeField]
+		private Material _material;
+
+		[SerializeField]
 		private MeshFilter[] _meshFilters;
 
 		[ContextMenu("generate")]
@@ -33,10 +36,12 @@ namespace TakashiCompany.Unity.VoxReader
 					mf = bone.gameObject.AddComponent<MeshFilter>();
 				}
 
-				if (!bone.TryGetComponent<MeshRenderer>(out _))
+				if (!bone.TryGetComponent<MeshRenderer>(out var renderer))
 				{
-					bone.gameObject.AddComponent<MeshRenderer>();
+					renderer = bone.gameObject.AddComponent<MeshRenderer>();
 				}
+
+				renderer.sharedMaterial = _material;
 
 				mf.sharedMesh = mesh;
 				meshFilters.Add(mf);

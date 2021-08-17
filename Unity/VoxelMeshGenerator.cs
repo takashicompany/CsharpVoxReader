@@ -162,6 +162,8 @@ namespace TakashiCompany.Unity.VoxReader
 				var mesh = new Mesh();
 				mesh.vertices = vertice.ToArray();
 				mesh.triangles = triangleIndices.ToArray();
+				mesh.RecalculateBounds();
+				mesh.RecalculateNormals();
 
 				meshDict.Add(bone, mesh);
 			}
