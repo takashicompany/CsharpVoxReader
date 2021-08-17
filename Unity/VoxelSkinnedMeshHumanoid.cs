@@ -85,9 +85,7 @@ namespace TakashiCompany.Unity.VoxReader
 			_renderer.bones = _bones;
 			_renderer.sharedMesh = _mesh;
 
-			var avatar = GenerateAvatar();
-
-			_animator.avatar = avatar;
+			SetUpAvatar();
 		}
 
 		public override void Damage(Vector3 position, float radius)

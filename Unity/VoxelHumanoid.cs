@@ -148,7 +148,7 @@ namespace TakashiCompany.Unity.VoxReader
 			_bones = bones.ToArray();
 		}
 
-		protected Avatar GenerateAvatar()
+		private Avatar GenerateAvatar()
 		{
 			var bones = _rootBone.GetComponentsInChildren<Transform>();
 
@@ -203,6 +203,16 @@ namespace TakashiCompany.Unity.VoxReader
 			hd.hasTranslationDoF = false;
 
 			return AvatarBuilder.BuildHumanAvatar(_rootBone.gameObject, hd);
+		}
+
+		protected void SetUpAvatar()
+		{
+			_animator.avatar = GenerateAvatar();
+		}
+
+		protected Transform GetBone(HumanBodyBones bone)
+		{
+			return _animator.GetBoneTransform(bone);
 		}
 
 		protected bool IsActiveVoxel(int x, int y, int z)

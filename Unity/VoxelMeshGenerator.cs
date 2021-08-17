@@ -80,7 +80,7 @@ namespace TakashiCompany.Unity.VoxReader
 						vertexIndex = 0;
 					}
 
-					voxel.Init(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone, totalVertexIndex);
+					voxel.Init(v3, new Vector3(v3.x * unit, v3.y * unit, v3.z * unit) + offset, _voxelUnitScale, bone, vertexIndex);
 					
 					voxels.Add(voxel);
 
@@ -121,6 +121,8 @@ namespace TakashiCompany.Unity.VoxReader
 			var vertexDict = new Dictionary<HumanBodyBones, List<Vector3>>();
 			var triangleDict = new Dictionary<HumanBodyBones, List<int>>();
 
+			var boundsDict = BuildBoundsDict();
+
 			foreach (var v in voxels)
 			{
 				if (!vertexDict.TryGetValue(v.bone, out var vertice))
@@ -128,8 +130,18 @@ namespace TakashiCompany.Unity.VoxReader
 					vertice = new List<Vector3>();
 					vertexDict.Add(v.bone, vertice);
 				}
-				vertice.AddRange(v.GetVertexPoints());
-				
+
+				var points = v.GetVertexPoints().ToArray();
+
+				var origin = boundsDict[v.bone].GetBoneConnectionPoint(v.bone);
+
+				for (var i = 0; i < points.Length; i++)
+				{
+					var p = points[i];
+					points[i] = p - origin;
+				}
+
+				vertice.AddRange(points);
 
 				if (!triangleDict.TryGetValue(v.bone, out var indices))
 				{
