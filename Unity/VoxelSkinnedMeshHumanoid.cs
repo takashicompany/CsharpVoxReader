@@ -17,6 +17,9 @@ namespace TakashiCompany.Unity.VoxReader
 		private void UpdateMesh()
 		{
 			var tris = new List<int>();
+			// Debug.Log("vg:" + (_vertexGenerator != null));
+			// Debug.Log("vv:" + (_vertexGenerator.voxels != null));
+			// Debug.Log("va:" + (_voxelActive != null));
 			
 			foreach (var v in _vertexGenerator.voxels)
 			{
@@ -28,7 +31,9 @@ namespace TakashiCompany.Unity.VoxReader
 				}
 			}
 
-			_mesh.triangles = tris.ToArray();
+			// Debug.Log("sharedmesh:" + (_renderer.sharedMesh != null));
+
+			_renderer.sharedMesh.triangles = tris.ToArray();
 		}
 
 		[ContextMenu("generate all")]

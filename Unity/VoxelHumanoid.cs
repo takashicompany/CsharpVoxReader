@@ -40,6 +40,11 @@ namespace TakashiCompany.Unity.VoxReader
 
 		protected virtual void Awake()
 		{
+			Init();
+		}
+
+		private void Init()
+		{
 			var size = _vertexGenerator.voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
 			_voxels = new IVoxel[size.x, size.y, size.z];
@@ -57,14 +62,16 @@ namespace TakashiCompany.Unity.VoxReader
 
 				if (v.bone != HumanBodyBones.LastBone)
 				{
-					if (!_voxelBoneDict.ContainsKey(v.bone))
-					{
-						_voxelBoneDict.Add(v.bone, new List<IVoxel>() { v });
-					}
-					else
-					{
-						_voxelBoneDict[v.bone].Add(v);
-					}
+					// if (!_voxelBoneDict.ContainsKey(v.bone))
+					// {
+					// 	_voxelBoneDict.Add(v.bone, new List<IVoxel>() { v });
+					// }
+					// else
+					// {
+					// 	_voxelBoneDict[v.bone].Add(v);
+					// }
+
+					_voxelBoneDict.GetOrNew(v.bone).Add(v);
 
 					if (!_boneDict.ContainsKey(v.bone))
 					{
@@ -209,6 +216,25 @@ namespace TakashiCompany.Unity.VoxReader
 			return AvatarBuilder.BuildHumanAvatar(_rootBone.gameObject, hd);
 		}
 
+		protected List<int> GenerateTriangleIndices(HumanBodyBones bone, bool onlyActiveVoxel)
+		{
+			var triangleIndices = new List<int>();
+			if (_voxelBoneDict.TryGetValue(bone, out var voxels))
+			{
+				foreach (var v in voxels)
+				{
+					if (onlyActiveVoxel && !IsActiveVoxel(v))
+					{
+						continue;
+					}
+
+					triangleIndices.AddRange(v.GetTriangleIndices());
+				}
+			}
+
+			return triangleIndices;
+		}
+
 		protected void SetUpAvatar()
 		{
 			_animator.avatar = GenerateAvatar();
@@ -217,6 +243,11 @@ namespace TakashiCompany.Unity.VoxReader
 		protected Transform GetBone(HumanBodyBones bone)
 		{
 			return _animator.GetBoneTransform(bone);
+		}
+
+		protected bool IsActiveVoxel(IVoxel voxel)
+		{
+			return IsActiveVoxel(voxel.x, voxel.y, voxel.z);
 		}
 
 		protected bool IsActiveVoxel(int x, int y, int z)
@@ -246,8 +277,7 @@ namespace TakashiCompany.Unity.VoxReader
 					if (Vector3.Distance(center, pos) <= radius)
 					{
 						_voxelActive[v.x, v.y, v.z] = false;
-						var p = GetVoxelWorldPosition(v.x, v.y, v.z);
-						OnDestroyVoxel(v, p, center);
+						OnDestroyVoxel(v, pos, center);
 					}
 				}
 			}

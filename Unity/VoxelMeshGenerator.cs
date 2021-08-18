@@ -8,11 +8,8 @@ namespace TakashiCompany.Unity.VoxReader
 	[System.Serializable]
 	public class VoxelMeshGenerator<T> where T : IVoxel, new()
 	{
-
-#if UNITY_EDITOR
 		[SerializeField]
 		private Object _voxFile;
-#endif
 
 		[SerializeField]
 		private float _voxelUnitScale = 1f;
@@ -114,6 +111,20 @@ namespace TakashiCompany.Unity.VoxReader
 			mesh.triangles = tris.ToArray();
 
 			return mesh;
+		}
+
+		// いらないかも
+		public Dictionary<HumanBodyBones, List<IVoxel>> GenerateVoxelDict()
+		{
+			var dict = new Dictionary<HumanBodyBones, List<IVoxel>>();
+
+			foreach (var v in _voxels)
+			{
+				var list = dict.GetOrNew(v.bone);
+				list.Add(v);
+			}
+
+			return dict;
 		}
 
 		public Dictionary<HumanBodyBones, Mesh> GenerateMeshDict()

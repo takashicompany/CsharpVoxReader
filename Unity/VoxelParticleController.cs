@@ -21,6 +21,8 @@ namespace TakashiCompany.Unity.VoxReader
 			foreach (var vh in humans)
 			{
 				vh.onVoxelDestroyEvent += OnVoxelHumanVoxelDestroy;
+
+				Debug.Log("Hello");
 			}
 		}
 

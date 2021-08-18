@@ -256,5 +256,16 @@ namespace TakashiCompany.Unity.VoxReader
 
 			throw new System.NotFiniteNumberException(bone + " は未実装です");
 		}
+
+		public static V GetOrNew<K, V>(this Dictionary<K, V> self, K key) where V : new()
+		{
+			if (!self.TryGetValue(key, out var val))
+			{
+				val = new V();
+				self.Add(key, val);
+			}
+
+			return val;
+		}
 	}
 }

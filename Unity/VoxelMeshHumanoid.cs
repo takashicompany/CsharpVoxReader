@@ -24,12 +24,11 @@ namespace TakashiCompany.Unity.VoxReader
 			var dict = _vertexGenerator.GenerateMeshDict();
 
 			var meshFilters = new List<MeshFilter>();
-			
 
-			foreach (var kvp in dict)
+
+			foreach (var boneName in Common.humanBoneNames)
 			{
-				var boneName = kvp.Key;
-				var mesh = kvp.Value;
+				var mesh = dict[boneName];
 				var bone = GetBone(boneName);
 				
 				if (!bone.transform.TryGetComponent<MeshFilter>(out var mf))
@@ -53,7 +52,11 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private void UpdateMesh()
 		{
-			
+			// 一旦シンプルに
+			foreach (var boneName in Common.humanBoneNames)
+			{
+				
+			}
 		}
 
 		public override void Damage(Vector3 position, float radius)
