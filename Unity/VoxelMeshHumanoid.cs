@@ -24,6 +24,7 @@ namespace TakashiCompany.Unity.VoxReader
 			var dict = _vertexGenerator.GenerateMeshDict();
 
 			var meshFilters = new List<MeshFilter>();
+			
 
 			foreach (var kvp in dict)
 			{
@@ -48,6 +49,17 @@ namespace TakashiCompany.Unity.VoxReader
 			}
 
 			_meshFilters = meshFilters.ToArray();
+		}
+
+		private void UpdateMesh()
+		{
+			
+		}
+
+		public override void Damage(Vector3 position, float radius)
+		{
+			base.Damage(position, radius);
+			UpdateMesh();
 		}
 	}
 }

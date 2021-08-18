@@ -34,6 +34,10 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private Transform[,,] _boneMap;
 
+		public delegate void VoxelDestroyDelegate(IVoxel voxel, Vector3 worldPoint, Vector3 center);
+
+		public event VoxelDestroyDelegate onVoxelDestroyEvent;
+
 		protected virtual void Awake()
 		{
 			var size = _vertexGenerator.voxelSize;
@@ -231,7 +235,7 @@ namespace TakashiCompany.Unity.VoxReader
 			return worldPos;
 		}
 
-		public virtual void Damage(Vector3 position, float radius)
+		public virtual void Damage(Vector3 center, float radius)
 		{
 			foreach (var v in _vertexGenerator.voxels)
 			{
@@ -239,18 +243,19 @@ namespace TakashiCompany.Unity.VoxReader
 				{
 					var pos = GetVoxelWorldPosition(v.x, v.y, v.z);
 
-					if (Vector3.Distance(position, pos) <= radius)
+					if (Vector3.Distance(center, pos) <= radius)
 					{
 						_voxelActive[v.x, v.y, v.z] = false;
-						OnDestroyVoxel(v, position);
+						var p = GetVoxelWorldPosition(v.x, v.y, v.z);
+						OnDestroyVoxel(v, p, center);
 					}
 				}
 			}
 		}
 
-		protected virtual void OnDestroyVoxel(IVoxel voxel, Vector3 position)
+		protected virtual void OnDestroyVoxel(IVoxel voxel, Vector3 point, Vector3 center)
 		{
-
+			onVoxelDestroyEvent?.Invoke(voxel, point, center);
 		}
 
 		private void OnCollisionEnter(Collision collision)

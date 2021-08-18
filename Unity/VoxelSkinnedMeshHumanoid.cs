@@ -13,9 +13,7 @@ namespace TakashiCompany.Unity.VoxReader
 		[SerializeField]
 		private Mesh _mesh;
 
-		[SerializeField]
-		private ParticleSystem _damage;
-
+		
 		private void UpdateMesh()
 		{
 			var tris = new List<int>();
@@ -92,17 +90,6 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			base.Damage(position, radius);
 			UpdateMesh();
-		}
-
-		protected override void OnDestroyVoxel(IVoxel voxel, Vector3 position)
-		{
-			base.OnDestroyVoxel(voxel, position);
-
-			var p = GetVoxelWorldPosition(voxel.x, voxel.y, voxel.z);
-			var ep = new ParticleSystem.EmitParams();
-			ep.position = p;
-			ep.velocity = (p - position).normalized * Random.Range(1, 2);
-			_damage.Emit(ep, 1);
 		}
 
 		private void OnDrawGizmos()

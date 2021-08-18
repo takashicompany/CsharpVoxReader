@@ -5,6 +5,34 @@ namespace TakashiCompany.Unity.VoxReader
 	using System.Linq;
 	using UnityEngine;
 
+	public static partial class Common
+	{
+		public static readonly HumanBodyBones[] humanBoneNames = new HumanBodyBones[]
+		{
+			HumanBodyBones.Hips,
+			HumanBodyBones.Spine,
+			HumanBodyBones.Chest,
+			HumanBodyBones.Neck,
+			HumanBodyBones.Head,
+			
+			HumanBodyBones.LeftUpperLeg,
+			HumanBodyBones.LeftLowerLeg,
+			HumanBodyBones.LeftFoot,
+			
+			HumanBodyBones.RightUpperLeg,
+			HumanBodyBones.RightLowerLeg,
+			HumanBodyBones.RightFoot,
+
+			HumanBodyBones.LeftUpperArm,
+			HumanBodyBones.LeftLowerArm,
+			HumanBodyBones.LeftHand,
+			
+			HumanBodyBones.RightUpperArm,
+			HumanBodyBones.RightLowerArm,
+			HumanBodyBones.RightHand
+		};
+	}
+
 	public static partial class Extension
 	{
 
