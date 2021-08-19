@@ -10,8 +10,22 @@ namespace TakashiCompany.Unity.VoxReader
 		[SerializeField]
 		private Material _material;
 
-		[SerializeField]
-		private MeshFilter[] _meshFilters;
+		private Dictionary<HumanBodyBones, MeshFilter> _meshFilterDict;
+		
+
+		protected override void Awake()
+		{
+			base.Awake();
+
+			_meshFilterDict = new Dictionary<HumanBodyBones, MeshFilter>();
+
+			foreach(var boneName in Common.humanBoneNames)
+			{
+				var bone = GetBone(boneName);
+				
+				_meshFilterDict.Add(boneName, bone.GetComponent<MeshFilter>());
+			}
+		}
 
 		[ContextMenu("generate")]
 		private void Generate()
@@ -46,8 +60,6 @@ namespace TakashiCompany.Unity.VoxReader
 				mf.sharedMesh = mesh;
 				meshFilters.Add(mf);
 			}
-
-			_meshFilters = meshFilters.ToArray();
 		}
 
 		private void UpdateMesh()
@@ -55,8 +67,15 @@ namespace TakashiCompany.Unity.VoxReader
 			// 一旦シンプルに
 			foreach (var boneName in Common.humanBoneNames)
 			{
-				
+				var tri = GenerateTriangleIndices(boneName, true).ToArray();
+				var mesh = GetMesh(boneName);
+				mesh.triangles = tri;
 			}
+		}
+
+		private Mesh GetMesh(HumanBodyBones bone)
+		{
+			return _meshFilterDict[bone].sharedMesh;	// shared mesh
 		}
 
 		public override void Damage(Vector3 position, float radius)
