@@ -16,13 +16,11 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			_voxelHumanoids = new List<VoxelHumanoid>();
 			
-			var humans = GameObject.FindObjectsOfType<VoxelHumanoid>();
+			var humans = GameObject.FindObjectsOfType<VoxelHumanoid>(true);
 
 			foreach (var vh in humans)
 			{
 				vh.onVoxelDestroyEvent += OnVoxelHumanVoxelDestroy;
-
-				Debug.Log("Hello");
 			}
 		}
 
