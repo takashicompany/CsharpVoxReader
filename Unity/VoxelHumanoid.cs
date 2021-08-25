@@ -56,7 +56,6 @@ namespace TakashiCompany.Unity.VoxReader
 
 			foreach (var v in _vertexGenerator.voxels)
 			{
-				v.CreateCache();
 				_voxelActive[v.x, v.y, v.z] = true;
 				_voxels[v.x, v.y, v.z] = v;
 

@@ -17,8 +17,6 @@ namespace TakashiCompany.Unity.VoxReader
 
 		void Init(Vector3Int position, Vector3 positionFromCenter, float unitPerSize, HumanBodyBones bone, int startIndex);
 
-		void CreateCache();
-
 		IEnumerable<Vector3> GetVertexPoints();
 
 		IEnumerable<int> GetTriangleIndices();
@@ -128,11 +126,6 @@ namespace TakashiCompany.Unity.VoxReader
 			_triangleIndices[triIndex++] = myStartIndex + 0;
 			_triangleIndices[triIndex++] = myStartIndex + 2;
 			_triangleIndices[triIndex++] = myStartIndex + 3;
-		}
-
-		public void CreateCache()
-		{
-			//throw new System.NotImplementedException();
 		}
 
 		public IEnumerable<int> GetTriangleIndices()

@@ -87,8 +87,6 @@ namespace TakashiCompany.Unity.VoxReader
 					{
 						vertexIndexDict[bone] += 24;
 					}
-
-					voxel.CreateCache();
 				}
 			});
 
