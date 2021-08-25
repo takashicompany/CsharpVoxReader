@@ -21,7 +21,7 @@ namespace TakashiCompany.Unity.VoxReader
 		
 		protected bool[,,] _voxelActive;
 
-		private IVoxel[,,] _voxels;
+		private IVoxel[,,] _voxelMap;
 
 		private Vector3[,,] _voxelPositionMap;
 
@@ -36,7 +36,7 @@ namespace TakashiCompany.Unity.VoxReader
 		public event VoxelDestroyDelegate onVoxelDestroyEvent;
 
 		protected abstract Vector3Int _voxelSize { get; }
-		protected abstract IVoxel[] _voxelArray { get; }
+		protected abstract IVoxel[] _voxels { get; }
 
 		protected virtual void Awake()
 		{
@@ -47,17 +47,17 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			var size = _voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
-			_voxels = new IVoxel[size.x, size.y, size.z];
+			_voxelMap = new IVoxel[size.x, size.y, size.z];
 			_voxelPositionMap = new Vector3[size.x, size.y, size.z];
 			_boneMap = new Transform[size.x, size.y, size.z];
 
 			_voxelBoneDict = new Dictionary<HumanBodyBones, List<IVoxel>>();
 			_boneDict = new Dictionary<HumanBodyBones, Transform>();
 
-			foreach (var v in _voxelArray)
+			foreach (var v in _voxels)
 			{
 				_voxelActive[v.x, v.y, v.z] = true;
-				_voxels[v.x, v.y, v.z] = v;
+				_voxelMap[v.x, v.y, v.z] = v;
 
 				if (v.bone != HumanBodyBones.LastBone)
 				{
@@ -116,7 +116,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			_bones = null;
 
-			var boundsDict = _voxelArray.BuildBoundsDict();
+			var boundsDict = _voxels.BuildBoundsDict();
 
 			var boneDict = new Dictionary<HumanBodyBones, Transform>();
 			var bones = new List<Transform>();
@@ -267,7 +267,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 		public virtual void Damage(Vector3 center, float radius)
 		{
-			foreach (var v in _voxelArray)
+			foreach (var v in _voxels)
 			{
 				if (IsActiveVoxel(v.x, v.y, v.z))
 				{
@@ -304,6 +304,6 @@ namespace TakashiCompany.Unity.VoxReader
 		protected VoxelMeshGenerator<T> _vertexGenerator;
 		
 		protected override Vector3Int _voxelSize => _vertexGenerator.voxelSize;
-		protected override IVoxel[] _voxelArray => _vertexGenerator.voxels;
+		protected override IVoxel[] _voxels => _vertexGenerator.voxels;
 	}
 }
