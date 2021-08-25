@@ -267,5 +267,34 @@ namespace TakashiCompany.Unity.VoxReader
 
 			return val;
 		}
+
+		public static Dictionary<HumanBodyBones, Bounds> BuildBoundsDict(this IEnumerable<IVoxel> self)
+		{
+			var dict = new Dictionary<HumanBodyBones, Bounds>();
+			
+			var boneTypes = new Dictionary<HumanBodyBones, List<IVoxel>>();
+
+			foreach (var v in self)
+			{
+				if (!boneTypes.ContainsKey(v.bone))
+				{
+					boneTypes.Add(v.bone, new List<IVoxel>() { v });
+				}
+				else
+				{
+					boneTypes[v.bone].Add(v);
+				}
+			}
+
+			foreach (var kvp in boneTypes)
+			{
+				var key = kvp.Key;
+				var list = kvp.Value;
+				var bounds = list.GetBounds();
+				dict.Add(key, bounds);
+			}
+
+			return dict;
+		}
 	}
 }

@@ -5,14 +5,13 @@ namespace TakashiCompany.Unity.VoxReader
 	using System.Linq;
 	using UnityEngine;
 
-	public class VoxelSkinnedMeshHumanoid : VoxelHumanoid
+	public class VoxelSkinnedMeshHumanoid : VoxelHumanoid<SimpleVoxel>
 	{
 		[SerializeField]
 		protected SkinnedMeshRenderer _renderer;
 
 		[SerializeField]
 		private Mesh _mesh;
-
 		
 		private void UpdateMesh()
 		{

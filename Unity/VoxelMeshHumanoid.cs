@@ -5,14 +5,13 @@ namespace TakashiCompany.Unity.VoxReader
 	using System.Linq;
 	using UnityEngine;
 
-	public class VoxelMeshHumanoid : VoxelHumanoid
+	public class VoxelMeshHumanoid : VoxelHumanoid<SimpleVoxel>
 	{
 		[SerializeField]
 		private Material _material;
 
 		private Dictionary<HumanBodyBones, MeshFilter> _meshFilterDict;
 		
-
 		protected override void Awake()
 		{
 			base.Awake();

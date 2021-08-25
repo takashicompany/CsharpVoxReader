@@ -8,9 +8,6 @@ namespace TakashiCompany.Unity.VoxReader
 	public abstract class VoxelHumanoid : MonoBehaviour
 	{
 		[SerializeField]
-		protected VoxelMeshGenerator<SimpleVoxel> _vertexGenerator;		// TODOとりあえずはここに置く
-
-		[SerializeField]
 		protected Animator _animator;
 
 		[SerializeField]
@@ -38,6 +35,9 @@ namespace TakashiCompany.Unity.VoxReader
 
 		public event VoxelDestroyDelegate onVoxelDestroyEvent;
 
+		protected abstract Vector3Int _voxelSize { get; }
+		protected abstract IVoxel[] _voxelArray { get; }
+
 		protected virtual void Awake()
 		{
 			Init();
@@ -45,7 +45,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private void Init()
 		{
-			var size = _vertexGenerator.voxelSize;
+			var size = _voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
 			_voxels = new IVoxel[size.x, size.y, size.z];
 			_voxelPositionMap = new Vector3[size.x, size.y, size.z];
@@ -54,7 +54,7 @@ namespace TakashiCompany.Unity.VoxReader
 			_voxelBoneDict = new Dictionary<HumanBodyBones, List<IVoxel>>();
 			_boneDict = new Dictionary<HumanBodyBones, Transform>();
 
-			foreach (var v in _vertexGenerator.voxels)
+			foreach (var v in _voxelArray)
 			{
 				_voxelActive[v.x, v.y, v.z] = true;
 				_voxels[v.x, v.y, v.z] = v;
@@ -116,7 +116,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			_bones = null;
 
-			var boundsDict = this._vertexGenerator.BuildBoundsDict();
+			var boundsDict = _voxelArray.BuildBoundsDict();
 
 			var boneDict = new Dictionary<HumanBodyBones, Transform>();
 			var bones = new List<Transform>();
@@ -267,7 +267,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 		public virtual void Damage(Vector3 center, float radius)
 		{
-			foreach (var v in _vertexGenerator.voxels)
+			foreach (var v in _voxelArray)
 			{
 				if (IsActiveVoxel(v.x, v.y, v.z))
 				{
@@ -296,5 +296,14 @@ namespace TakashiCompany.Unity.VoxReader
 				Damage(contact.point, 0.5f);
 			}
 		}
+	}
+
+	public abstract class VoxelHumanoid<T> : VoxelHumanoid where T : IVoxel, new()
+	{
+		[SerializeField]
+		protected VoxelMeshGenerator<T> _vertexGenerator;
+		
+		protected override Vector3Int _voxelSize => _vertexGenerator.voxelSize;
+		protected override IVoxel[] _voxelArray => _vertexGenerator.voxels;
 	}
 }
