@@ -19,7 +19,7 @@ namespace TakashiCompany.Unity.VoxReader
 		[SerializeField]
 		protected bool _withCollider;
 		
-		protected bool[,,] _voxelActive;
+		private bool[,,] _voxelActive;
 
 		private IVoxel[,,] _voxelMap;
 
@@ -275,16 +275,36 @@ namespace TakashiCompany.Unity.VoxReader
 
 					if (Vector3.Distance(center, pos) <= radius)
 					{
-						_voxelActive[v.x, v.y, v.z] = false;
+						ChangeVoxelActive(v.x, v.y, v.z, false);
 						OnDestroyVoxel(v, pos, center);
 					}
 				}
 			}
 		}
 
+		protected void ChangeVoxelActive(int x, int y, int z, bool active)
+		{
+			if (_voxelActive[x, y, z] != active)
+			{
+				_voxelActive[x, y, z] = active;
+
+				OnChangeVoxelActive(x, y, z, active);
+			}
+		}
+
+		protected virtual void OnChangeVoxelActive(int x, int y, int z, bool active)
+		{
+
+		}
+
 		protected virtual void OnDestroyVoxel(IVoxel voxel, Vector3 point, Vector3 center)
 		{
 			onVoxelDestroyEvent?.Invoke(voxel, point, center);
+		}
+
+		public IVoxel GetVoxel(int x, int y, int z)
+		{
+			return _voxelMap[x, y, z];
 		}
 
 		private void OnCollisionEnter(Collision collision)

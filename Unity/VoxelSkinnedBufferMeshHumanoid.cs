@@ -5,16 +5,18 @@ namespace TakashiCompany.Unity.VoxReader
 	using System.Linq;
 	using UnityEngine;
 
-	public class VoxelSkinnedMeshHumanoid : VoxelHumanoid<SimpleVoxel>
+	public class VoxelSkinnedBufferMeshHumanoid : VoxelHumanoid<SimpleVoxel>
 	{
 		[SerializeField]
 		protected SkinnedMeshRenderer _renderer;
 
-		[SerializeField]
-		private Mesh _mesh;
-		
-		private void UpdateMesh()
+		private HashSet<Vector3Int> _updateList = new HashSet<Vector3Int>();
+
+		protected override void Awake()
 		{
+			base.Awake();
+			var mesh = _renderer.sharedMesh;
+
 			var tris = new List<int>();
 			// Debug.Log("vg:" + (_vertexGenerator != null));
 			// Debug.Log("vv:" + (_vertexGenerator.voxels != null));
@@ -22,15 +24,31 @@ namespace TakashiCompany.Unity.VoxReader
 			
 			foreach (var v in _vertexGenerator.voxels)
 			{
-				if (IsActiveVoxel(v.x, v.y, v.z))
-				{
-					tris.AddRange(v.GetTriangleIndices());
-				}
+				tris.AddRange(v.GetTriangleIndices());
 			}
 
-			// Debug.Log("sharedmesh:" + (_renderer.sharedMesh != null));
+			mesh.SetIndexBufferParams(tris.Count, UnityEngine.Rendering.IndexFormat.UInt32);
+			mesh.SetIndexBufferData(tris.ToArray(), 0, 0, tris.Count);
+		}
 
-			_renderer.sharedMesh.triangles = tris.ToArray();
+		private void UpdateMesh()
+		{
+			var mesh = _renderer.sharedMesh;
+
+			foreach (var v3int in _updateList)
+			{
+				var v = GetVoxel(v3int.x, v3int.y, v3int.z);
+				// mesh.SetIndexBufferData(
+			}
+
+			_updateList.Clear();
+		}
+
+		protected override void OnChangeVoxelActive(int x, int y, int z, bool active)
+		{
+			base.OnChangeVoxelActive(x, y, z, active);
+
+			_updateList.Add(new Vector3Int(x, y, z));
 		}
 
 		[ContextMenu("generate all")]
@@ -50,7 +68,7 @@ namespace TakashiCompany.Unity.VoxReader
 				boneIndexDict[bn] = i;
 			}
 
-			_mesh = _vertexGenerator.GenerateMesh();
+			var mesh = _vertexGenerator.GenerateMesh();
 
 			var boneWeights = new List<BoneWeight>();
 
@@ -66,7 +84,7 @@ namespace TakashiCompany.Unity.VoxReader
 				}
 			}
 
-			_mesh.boneWeights = boneWeights.ToArray();
+			mesh.boneWeights = boneWeights.ToArray();
 
 			Matrix4x4[] bindPoses = new Matrix4x4[_bones.Length];
 
@@ -76,14 +94,14 @@ namespace TakashiCompany.Unity.VoxReader
 				bindPoses[i] = bone.worldToLocalMatrix * transform.localToWorldMatrix;
 			}
 
-			_mesh.bindposes = bindPoses;
+			mesh.bindposes = bindPoses;
 
-			_mesh.RecalculateNormals();
-			_mesh.RecalculateBounds();
-			_mesh.RecalculateTangents();
+			mesh.RecalculateNormals();
+			mesh.RecalculateBounds();
+			mesh.RecalculateTangents();
 
 			_renderer.bones = _bones;
-			_renderer.sharedMesh = _mesh;
+			_renderer.sharedMesh = mesh;
 
 			SetUpAvatar();
 		}
@@ -113,6 +131,5 @@ namespace TakashiCompany.Unity.VoxReader
 			// 	}
 			// }
 		}
-
 	}
 }
