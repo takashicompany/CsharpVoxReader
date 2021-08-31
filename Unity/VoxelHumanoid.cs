@@ -290,7 +290,15 @@ namespace TakashiCompany.Unity.VoxReader
 			}
 		}
 
-		protected void ChangeVoxelActive(int x, int y, int z, bool active)
+		public void ChangeVoxelActiveAll(bool active)
+		{
+			foreach (var v in _voxels)
+			{
+				ChangeVoxelActive(v.x, v.y, v.z, active);
+			}
+		}
+
+		public void ChangeVoxelActive(int x, int y, int z, bool active)
 		{
 			if (_voxelActive[x, y, z] != active)
 			{

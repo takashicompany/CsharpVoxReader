@@ -16,6 +16,11 @@ namespace TakashiCompany.Unity.VoxReader
 		[SerializeField]
 		private Vector3 _from;
 
+		private void Start()
+		{
+			_target.ChangeVoxelActiveAll(false);
+		}
+
 		void OnGUI()
 		{
 			if (GUI.Button(new Rect(0, Screen.height - 100, 100, 100), "Hoge"))
@@ -30,7 +35,7 @@ namespace TakashiCompany.Unity.VoxReader
 					}
 				}
 
-				_vp.Repair(_target, list, _from, 1, voxel =>
+				_vp.Repair(_target, list, _from, 10, voxel =>
 				{
 					
 				});
