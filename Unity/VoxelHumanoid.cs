@@ -38,11 +38,14 @@ namespace TakashiCompany.Unity.VoxReader
 		protected abstract Vector3Int _voxelSize { get; }
 		protected abstract IVoxel[] _voxels { get; }
 
+		public IVoxel[] voxels => _voxels;
+
 		protected virtual void Awake()
 		{
 			Init();
 		}
 
+		[ContextMenu("init test")]
 		private void Init()
 		{
 			var size = _voxelSize;
@@ -56,6 +59,11 @@ namespace TakashiCompany.Unity.VoxReader
 
 			foreach (var v in _voxels)
 			{
+				if (v == null)
+				{
+					Debug.LogError("nullです！");
+					continue;
+				}
 				_voxelActive[v.x, v.y, v.z] = true;
 				_voxelMap[v.x, v.y, v.z] = v;
 
@@ -254,7 +262,7 @@ namespace TakashiCompany.Unity.VoxReader
 			return _voxelActive[x, y, z];
 		}
 
-		protected Vector3 GetVoxelWorldPosition(int x, int y, int z)
+		public Vector3 GetVoxelWorldPosition(int x, int y, int z)
 		{
 			var pos = _voxelPositionMap[x, y, z];
 
