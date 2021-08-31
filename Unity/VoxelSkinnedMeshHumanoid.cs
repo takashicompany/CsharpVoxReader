@@ -12,13 +12,21 @@ namespace TakashiCompany.Unity.VoxReader
 
 		[SerializeField]
 		private Mesh _mesh;
+
+		private bool _updateMeshRequested = false;
+
+		private void Update()
+		{
+			if (_updateMeshRequested)
+			{
+				UpdateMesh();
+				_updateMeshRequested = false;
+			}
+		}
 		
 		private void UpdateMesh()
 		{
 			var tris = new List<int>();
-			// Debug.Log("vg:" + (_vertexGenerator != null));
-			// Debug.Log("vv:" + (_vertexGenerator.voxels != null));
-			// Debug.Log("va:" + (_voxelActive != null));
 			
 			foreach (var v in _vertexGenerator.voxels)
 			{
@@ -27,8 +35,6 @@ namespace TakashiCompany.Unity.VoxReader
 					tris.AddRange(v.GetTriangleIndices());
 				}
 			}
-
-			// Debug.Log("sharedmesh:" + (_renderer.sharedMesh != null));
 
 			_renderer.sharedMesh.triangles = tris.ToArray();
 		}
@@ -92,6 +98,11 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			base.Damage(position, radius);
 			UpdateMesh();
+		}
+
+		public override void RequestUpdateMesh()
+		{
+			_updateMeshRequested = true;
 		}
 
 		private void OnDrawGizmos()

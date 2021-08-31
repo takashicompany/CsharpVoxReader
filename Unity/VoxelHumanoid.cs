@@ -252,12 +252,12 @@ namespace TakashiCompany.Unity.VoxReader
 			return _animator.GetBoneTransform(bone);
 		}
 
-		protected bool IsActiveVoxel(IVoxel voxel)
+		public bool IsActiveVoxel(IVoxel voxel)
 		{
 			return IsActiveVoxel(voxel.x, voxel.y, voxel.z);
 		}
 
-		protected bool IsActiveVoxel(int x, int y, int z)
+		public bool IsActiveVoxel(int x, int y, int z)
 		{
 			return _voxelActive[x, y, z];
 		}
@@ -331,6 +331,11 @@ namespace TakashiCompany.Unity.VoxReader
 
 				Damage(contact.point, 0.5f);
 			}
+		}
+
+		public virtual void RequestUpdateMesh()
+		{
+
 		}
 	}
 

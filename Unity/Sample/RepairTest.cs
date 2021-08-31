@@ -19,6 +19,7 @@ namespace TakashiCompany.Unity.VoxReader
 		private void Start()
 		{
 			_target.ChangeVoxelActiveAll(false);
+			_target.RequestUpdateMesh();
 		}
 
 		void OnGUI()
@@ -29,7 +30,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 				foreach (var v in _target.voxels)
 				{
-					if (Random.Range(0, 3) == 0)
+					if (!_target.IsActiveVoxel(v) && Random.Range(0, 3) < 5)
 					{
 						list.Add(v);
 					}
@@ -37,7 +38,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 				_vp.Repair(_target, list, _from, 10, voxel =>
 				{
-					
+					_target.ChangeVoxelActive(voxel.x, voxel.y, voxel.z, true);
+					_target.RequestUpdateMesh();
 				});
 			}
 		}

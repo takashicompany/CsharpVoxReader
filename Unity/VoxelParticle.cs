@@ -54,7 +54,7 @@ namespace TakashiCompany.Unity.VoxReader
 				if (Vector3.Distance(current, to) <= speedOrDuration * deltaTime)
 				{
 					position = Vector3.zero;
-					
+					onComplete?.Invoke(voxel);
 					return false;
 				}
 
