@@ -1,4 +1,4 @@
-namespace TakashiCompany.Unity.VoxReader
+namespace TakashiCompany.Unity.VoxReader.Sample
 {
 	using System.Collections;
 	using System.Collections.Generic;

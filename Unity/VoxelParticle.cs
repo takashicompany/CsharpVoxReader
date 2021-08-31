@@ -79,19 +79,25 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			foreach (var v in voxels)
 			{
-				var p = new Param()
-				{
-					voxelOwner = voxelOwner,
-					voxel = v,
-					from = startPoint,
-					current = startPoint,
-					speedOrDuration = speedOrDuration,
-					onComplete = onComplete
-				};
-
-				_params.Add(p);
+				Repair(voxelOwner, v, startPoint, speedOrDuration, onComplete);
 			}
 		}
+
+		public void Repair(VoxelHumanoid voxelOwner, IVoxel voxel, Vector3 startPoint, float speedOrDuration, CompleteDelegate onComplete)
+		{
+			var p = new Param()
+			{
+				voxelOwner = voxelOwner,
+				voxel = voxel,
+				from = startPoint,
+				current = startPoint,
+				speedOrDuration = speedOrDuration,
+				onComplete = onComplete
+			};
+
+			_params.Add(p);
+		}
+
 
 		private void LateUpdate()
 		{
