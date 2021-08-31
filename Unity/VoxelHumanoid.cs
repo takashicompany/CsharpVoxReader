@@ -34,8 +34,9 @@ namespace TakashiCompany.Unity.VoxReader
 		public event IVoxelObject.VoxelDestroyDelegate onVoxelDestroyEvent;
 
 		protected abstract Vector3Int _voxelSize { get; }
-		protected abstract IVoxel[] _voxels { get; }
+		public Vector3Int voxelSize => _voxelSize;
 
+		protected abstract IVoxel[] _voxels { get; }
 		public IVoxel[] voxels => _voxels;
 
 		protected virtual void Awake()

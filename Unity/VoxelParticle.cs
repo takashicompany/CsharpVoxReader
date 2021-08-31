@@ -15,7 +15,7 @@ namespace TakashiCompany.Unity.VoxReader
 		[System.Serializable]
 		private class Param
 		{
-			public VoxelHumanoid voxelOwner { get; /*private*/ set; }
+			public IVoxelObject voxelOwner { get; /*private*/ set; }
 			public IVoxel voxel { get; /*private*/ set; }
 
 			public Vector3 from { get; /*private*/ set; }
@@ -75,7 +75,7 @@ namespace TakashiCompany.Unity.VoxReader
 			_particles = new ParticleSystem.Particle[_particleSystem.main.maxParticles];
 		}
 
-		public void Repair(VoxelHumanoid voxelOwner, IEnumerable<IVoxel> voxels, Vector3 startPoint, float speedOrDuration, CompleteDelegate onComplete)
+		public void Repair(IVoxelObject voxelOwner, IEnumerable<IVoxel> voxels, Vector3 startPoint, float speedOrDuration, CompleteDelegate onComplete)
 		{
 			foreach (var v in voxels)
 			{
@@ -83,7 +83,7 @@ namespace TakashiCompany.Unity.VoxReader
 			}
 		}
 
-		public void Repair(VoxelHumanoid voxelOwner, IVoxel voxel, Vector3 startPoint, float speedOrDuration, CompleteDelegate onComplete)
+		public void Repair(IVoxelObject voxelOwner, IVoxel voxel, Vector3 startPoint, float speedOrDuration, CompleteDelegate onComplete)
 		{
 			var p = new Param()
 			{
