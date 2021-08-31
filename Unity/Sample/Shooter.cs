@@ -40,11 +40,11 @@ namespace TakashiCompany.Unity.VoxReader.Sample
 
 					foreach (var v in _target.voxels)
 					{
-						if (!_target.IsActiveVoxel(v))
+						if (!_target.IsActiveVoxel(v.voxelPosition))
 						{
 							_voxelParticle.Repair(_target, v, ray.origin + ray.direction * 2, 5, voxel =>
 							{
-								_target.ChangeVoxelActive(voxel.x, voxel.y, voxel.z, true);
+								_target.ChangeVoxelActive(voxel.voxelPosition, true);
 								_target.RequestUpdateMesh();
 							});
 

@@ -48,7 +48,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			private bool Update(float deltaTime, out Vector3 position, out Vector3 velocity)
 			{
-				var to = voxelOwner.GetVoxelWorldPosition(voxel.x, voxel.y, voxel.z);
+				var to = voxelOwner.GetVoxelWorldPosition(voxel.voxelPosition);
 				velocity = Vector3.zero;
 
 				if (Vector3.Distance(current, to) <= speedOrDuration * deltaTime)

@@ -30,7 +30,7 @@ namespace TakashiCompany.Unity.VoxReader.Sample
 
 				foreach (var v in _target.voxels)
 				{
-					if (!_target.IsActiveVoxel(v) && Random.Range(0, 3) < 5)
+					if (!_target.IsActiveVoxel(v.voxelPosition) && Random.Range(0, 3) < 5)
 					{
 						list.Add(v);
 					}
@@ -38,7 +38,7 @@ namespace TakashiCompany.Unity.VoxReader.Sample
 
 				_vp.Repair(_target, list, _from, 10, voxel =>
 				{
-					_target.ChangeVoxelActive(voxel.x, voxel.y, voxel.z, true);
+					_target.ChangeVoxelActive(voxel.voxelPosition, true);
 					_target.RequestUpdateMesh();
 				});
 			}

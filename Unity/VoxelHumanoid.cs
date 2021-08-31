@@ -5,7 +5,7 @@ namespace TakashiCompany.Unity.VoxReader
 	using System.Linq;
 	using UnityEngine;
 
-	public abstract class VoxelHumanoid : MonoBehaviour
+	public abstract class VoxelHumanoid : MonoBehaviour, IVoxelObject
 	{
 		[SerializeField]
 		protected Animator _animator;
@@ -31,9 +31,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private Transform[,,] _boneMap;
 
-		public delegate void VoxelDestroyDelegate(IVoxel voxel, Vector3 worldPoint, Vector3 center);
-
-		public event VoxelDestroyDelegate onVoxelDestroyEvent;
+		public event IVoxelObject.VoxelDestroyDelegate onVoxelDestroyEvent;
 
 		protected abstract Vector3Int _voxelSize { get; }
 		protected abstract IVoxel[] _voxels { get; }
@@ -230,7 +228,7 @@ namespace TakashiCompany.Unity.VoxReader
 			{
 				foreach (var v in voxels)
 				{
-					if (onlyActiveVoxel && !IsActiveVoxel(v))
+					if (onlyActiveVoxel && !IsActiveVoxel(v.voxelPosition))
 					{
 						continue;
 					}
@@ -252,9 +250,9 @@ namespace TakashiCompany.Unity.VoxReader
 			return _animator.GetBoneTransform(bone);
 		}
 
-		public bool IsActiveVoxel(IVoxel voxel)
+		public bool IsActiveVoxel(Vector3Int voxelPosition)
 		{
-			return IsActiveVoxel(voxel.x, voxel.y, voxel.z);
+			return IsActiveVoxel(voxelPosition.x, voxelPosition.y, voxelPosition.z);
 		}
 
 		public bool IsActiveVoxel(int x, int y, int z)
@@ -262,11 +260,11 @@ namespace TakashiCompany.Unity.VoxReader
 			return _voxelActive[x, y, z];
 		}
 
-		public Vector3 GetVoxelWorldPosition(int x, int y, int z)
+		public Vector3 GetVoxelWorldPosition(Vector3Int voxelPosition)
 		{
-			var pos = _voxelPositionMap[x, y, z];
+			var pos = _voxelPositionMap[voxelPosition.x, voxelPosition.y, voxelPosition.z];
 
-			var bone = _boneMap[x, y, z];
+			var bone = _boneMap[voxelPosition.x, voxelPosition.y, voxelPosition.z];
 
 			var worldPos = bone.TransformPoint(pos);
 
@@ -279,11 +277,11 @@ namespace TakashiCompany.Unity.VoxReader
 			{
 				if (IsActiveVoxel(v.x, v.y, v.z))
 				{
-					var pos = GetVoxelWorldPosition(v.x, v.y, v.z);
+					var pos = GetVoxelWorldPosition(v.voxelPosition);
 
 					if (Vector3.Distance(center, pos) <= radius)
 					{
-						ChangeVoxelActive(v.x, v.y, v.z, false);
+						ChangeVoxelActive(v.voxelPosition, false);
 						OnDestroyVoxel(v, pos, center);
 					}
 				}
@@ -294,21 +292,20 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			foreach (var v in _voxels)
 			{
-				ChangeVoxelActive(v.x, v.y, v.z, active);
+				ChangeVoxelActive(v.voxelPosition, active);
 			}
 		}
 
-		public void ChangeVoxelActive(int x, int y, int z, bool active)
+		public void ChangeVoxelActive(Vector3Int voxelPosition, bool active)
 		{
-			if (_voxelActive[x, y, z] != active)
+			if (_voxelActive[voxelPosition.x, voxelPosition.y, voxelPosition.z] != active)
 			{
-				_voxelActive[x, y, z] = active;
-
-				OnChangeVoxelActive(x, y, z, active);
+				_voxelActive[voxelPosition.x, voxelPosition.y, voxelPosition.z] = active;
+				OnChangeVoxelActive(voxelPosition, active);
 			}
 		}
 
-		protected virtual void OnChangeVoxelActive(int x, int y, int z, bool active)
+		protected virtual void OnChangeVoxelActive(Vector3Int voxelPosition, bool active)
 		{
 
 		}
@@ -335,7 +332,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 		public virtual void RequestUpdateMesh()
 		{
-			
+
 		}
 	}
 

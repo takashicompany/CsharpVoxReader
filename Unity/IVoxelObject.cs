@@ -7,7 +7,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 	public interface IVoxelObject
 	{
-		IVoxel voxels { get; }
+		IVoxel[] voxels { get; }
 		public delegate void VoxelDestroyDelegate(IVoxel voxel, Vector3 worldPoint, Vector3 center);
 		event VoxelDestroyDelegate onVoxelDestroyEvent;
 	
@@ -15,6 +15,7 @@ namespace TakashiCompany.Unity.VoxReader
 		Vector3 GetVoxelWorldPosition(Vector3Int voxelPosition);
 		void Damage(Vector3 center, float radius);
 		void ChangeVoxelActiveAll(bool active);
-		void ChangeVoxelAtive(Vector3Int voxelPosition, bool active);
+		void ChangeVoxelActive(Vector3Int voxelPosition, bool active);
 		void RequestUpdateMesh();
+	}
 }
