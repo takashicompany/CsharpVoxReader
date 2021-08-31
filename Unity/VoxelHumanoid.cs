@@ -335,7 +335,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 		public virtual void RequestUpdateMesh()
 		{
-
+			
 		}
 	}
 
