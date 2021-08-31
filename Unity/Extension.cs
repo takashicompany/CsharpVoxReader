@@ -140,6 +140,20 @@ namespace TakashiCompany.Unity.VoxReader
 			return new Bounds(center, size);
 		}
 
+		public static Vector3 RandomPoint(this Bounds bounds)
+		{
+			return bounds.RandomPoint(Vector3.zero);
+		}
+
+		public static Vector3 RandomPoint(this Bounds bounds, Vector3 excludeFromEdge)
+		{
+			var x = Random.Range(bounds.min.x + excludeFromEdge.x, bounds.max.x - excludeFromEdge.x);
+			var y = Random.Range(bounds.min.y + excludeFromEdge.y, bounds.max.y - excludeFromEdge.y);
+			var z = Random.Range(bounds.min.z + excludeFromEdge.z, bounds.max.z - excludeFromEdge.z);
+
+			return new Vector3(x, y, z);
+		}
+
 		public static Vector3 GetBoneConnectionPoint(this Bounds bounds, HumanBodyBones bone)
 		{
 			var dir = Vector3Int.zero;

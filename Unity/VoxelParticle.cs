@@ -127,7 +127,7 @@ namespace TakashiCompany.Unity.VoxReader
 				else
 				{
 					TrySetParticle();
-					_particleSystem.Emit(1);
+					_particleSystem.Emit(Vector3.one * 10000, Vector3.zero, 0.1f, 1f, Color.white);
 				}
 			}
 

@@ -29,9 +29,11 @@ namespace TakashiCompany.Unity.VoxReader
 			_voxelStateMap = new VoxelState[size.x, size.y, size.z];
 		}
 
-		public void RepairRandom(int count, Bounds point, float speedOrDuration)
+		public void RepairRandom(int count, Vector3 center, float radius, float speedOrDuration)
 		{
 			var repairList = _target.GenerateVoxelList(false);
+
+			repairList.RemoveAll(v => IsRepairing(v.voxelPosition));
 
 			var picked = new List<IVoxel>();
 
@@ -44,7 +46,15 @@ namespace TakashiCompany.Unity.VoxReader
 
 			foreach (var v in picked)
 			{
-				
+				var x = Random.Range(-1f, 1f);
+				var y = Random.Range(-1f, 1f);
+				var z = Random.Range(-1f, 1f);
+
+				var dir = new Vector3(x, y, z).normalized;
+
+				var p = center + dir * radius;
+
+				Repair(v, p, speedOrDuration);
 			}
 		}
 
@@ -54,6 +64,8 @@ namespace TakashiCompany.Unity.VoxReader
 			{
 				return;
 			}
+
+			ChangeVoxelState(voxel.voxelPosition, VoxelState.Repairing);
 
 			_voxelParticle.Repair(_target, voxel, position, speedOrDuration, v =>
 			{

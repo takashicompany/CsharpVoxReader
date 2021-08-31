@@ -18,9 +18,16 @@ namespace TakashiCompany.Unity.VoxReader.Sample
 
 		private bool _isRecover;
 
+		private VoxelRepairer _repairer;
+
 		private void Awake()
 		{
 			Application.targetFrameRate = 60;
+		}
+
+		private void Start()
+		{
+			_repairer = _target.GetComponent<VoxelRepairer>();
 		}
 
 		private void Update()
@@ -36,34 +43,11 @@ namespace TakashiCompany.Unity.VoxReader.Sample
 				}
 				else
 				{
-					var count = 0;
-
-					foreach (var v in _target.voxels)
-					{
-						if (!_target.IsActiveVoxel(v.voxelPosition))
-						{
-							_voxelParticle.Repair(_target, v, ray.origin + ray.direction * 2, 5, voxel =>
-							{
-								_target.ChangeVoxelActive(voxel.voxelPosition, true);
-								_target.RequestUpdateMesh();
-							});
-
-							count++;
-
-							if (count >= 30)
-							{
-								break;
-							}
-							
-						}
-					}
+					_repairer.RepairRandom(50, Vector3.up * 2, 4, 10);
 				}
 			}
 
-			if (Input.GetMouseButton(0) && _isRecover)
-			{
-				
-			}
+			_target.transform.Rotate(Vector3.up * 90 * Time.deltaTime);
 		}
 
 		private void OnGUI()

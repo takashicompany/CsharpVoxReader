@@ -30,7 +30,7 @@ namespace TakashiCompany.Unity.VoxReader
 			{
 				if (voxelObject.IsActiveVoxel(v.voxelPosition) == active)
 				{
-					list.Append(v);
+					list.Add(v);
 				}
 			}
 
