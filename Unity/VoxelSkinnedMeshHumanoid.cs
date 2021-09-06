@@ -9,11 +9,31 @@ namespace TakashiCompany.Unity.VoxReader
 	{
 		[SerializeField]
 		protected SkinnedMeshRenderer _renderer;
-
-		[SerializeField]
-		private Mesh _mesh;
-
+		
 		private bool _updateMeshRequested = false;
+
+		private Mesh _mesh => _renderer.sharedMesh;
+
+# if UNITY_EDITOR
+		[ContextMenu("save assets")]
+		private void SaveMesh()
+		{
+			if (_mesh == null)
+			{
+				Debug.Log("_meshがnullです");
+				return;
+			}
+			var path = UnityEditor.EditorUtility.SaveFilePanelInProject("Save mesh.", this.name, "", "save mesh.");
+			UnityEditor.AssetDatabase.CreateAsset(_mesh, path + "_mesh");
+			UnityEditor.AssetDatabase.CreateAsset(_animator.avatar, path + "_avatar");
+
+			var mesh = UnityEditor.AssetDatabase.LoadAssetAtPath<Mesh>(path + "_mesh");
+			_renderer.sharedMesh = mesh;
+
+			var avarar = UnityEditor.AssetDatabase.LoadAssetAtPath<Avatar>(path + "_avatar");
+			_animator.avatar = avarar;
+		}
+#endif
 
 		private void Update()
 		{
@@ -56,7 +76,7 @@ namespace TakashiCompany.Unity.VoxReader
 				boneIndexDict[bn] = i;
 			}
 
-			_mesh = _vertexGenerator.GenerateMesh();
+			var mesh = _vertexGenerator.GenerateMesh();
 
 			var boneWeights = new List<BoneWeight>();
 
@@ -82,14 +102,14 @@ namespace TakashiCompany.Unity.VoxReader
 				bindPoses[i] = bone.worldToLocalMatrix * transform.localToWorldMatrix;
 			}
 
-			_mesh.bindposes = bindPoses;
+			mesh.bindposes = bindPoses;
 
-			_mesh.RecalculateNormals();
-			_mesh.RecalculateBounds();
-			_mesh.RecalculateTangents();
+			mesh.RecalculateNormals();
+			mesh.RecalculateBounds();
+			mesh.RecalculateTangents();
 
 			_renderer.bones = _bones;
-			_renderer.sharedMesh = _mesh;
+			_renderer.sharedMesh = mesh;
 
 			SetUpAvatar();
 		}

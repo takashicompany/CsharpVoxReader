@@ -44,7 +44,6 @@ namespace TakashiCompany.Unity.VoxReader
 			Init();
 		}
 
-		[ContextMenu("init test")]
 		private void Init()
 		{
 			var size = _voxelSize;
