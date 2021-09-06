@@ -90,12 +90,7 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			return System.Enum.TryParse(name, out bone);
 		}
-
-		public static Bounds GetBounds(this IEnumerable<VoxToMesh.Vertex> vertices)
-		{
-			return vertices.Select(v => v.position).GetBounds();
-		}
-
+		
 		public static Bounds GetBounds(this IEnumerable<IVoxel> vertice)
 		{
 			return vertice.GetPoints().GetBounds();

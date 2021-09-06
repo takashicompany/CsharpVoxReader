@@ -130,7 +130,7 @@ namespace TakashiCompany.Unity.VoxReader
 
 			boneDict.Add(HumanBodyBones.LastBone, _rootBone);
 
-			foreach (var boneName in VoxToMesh.boneNames)
+			foreach (var boneName in Common.humanBoneNames)
 			{
 				var parentBoneName = boneName.GetParentBone();
 

@@ -48,11 +48,11 @@ namespace TakashiCompany.Unity.VoxReader
 
 			var boneIndexDict = new Dictionary<HumanBodyBones, int>();
 
-			Debug.Assert(VoxToMesh.boneNames.Length == _bones.Length, "ボーンの数が不正です。" + VoxToMesh.boneNames.Length + "/" + _bones.Length);
+			Debug.Assert(Common.humanBoneNames.Length == _bones.Length, "ボーンの数が不正です。" + Common.humanBoneNames.Length + "/" + _bones.Length);
 
-			for (int i = 0; i < VoxToMesh.boneNames.Length; i++)
+			for (int i = 0; i < Common.humanBoneNames.Length; i++)
 			{
-				var bn = VoxToMesh.boneNames[i];
+				var bn = Common.humanBoneNames[i];
 				boneIndexDict[bn] = i;
 			}
 
