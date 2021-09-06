@@ -24,13 +24,18 @@ namespace TakashiCompany.Unity.VoxReader
 				return;
 			}
 			var path = UnityEditor.EditorUtility.SaveFilePanelInProject("Save mesh.", this.name, "", "save mesh.");
-			UnityEditor.AssetDatabase.CreateAsset(_mesh, path + "_mesh");
-			UnityEditor.AssetDatabase.CreateAsset(_animator.avatar, path + "_avatar");
 
-			var mesh = UnityEditor.AssetDatabase.LoadAssetAtPath<Mesh>(path + "_mesh");
+			var meshPath = path + "_mesh.asset";
+			var avatarPath = path + "_avatar.asset";
+
+			UnityEditor.AssetDatabase.CreateAsset(_mesh, meshPath);
+			UnityEditor.AssetDatabase.CreateAsset(_animator.avatar, avatarPath);
+			UnityEditor.AssetDatabase.SaveAssets();
+
+			var mesh = UnityEditor.AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
 			_renderer.sharedMesh = mesh;
 
-			var avarar = UnityEditor.AssetDatabase.LoadAssetAtPath<Avatar>(path + "_avatar");
+			var avarar = UnityEditor.AssetDatabase.LoadAssetAtPath<Avatar>(avatarPath);
 			_animator.avatar = avarar;
 		}
 #endif
@@ -92,7 +97,7 @@ namespace TakashiCompany.Unity.VoxReader
 				}
 			}
 
-			_mesh.boneWeights = boneWeights.ToArray();
+			mesh.boneWeights = boneWeights.ToArray();
 
 			Matrix4x4[] bindPoses = new Matrix4x4[_bones.Length];
 
