@@ -193,6 +193,11 @@ namespace TakashiCompany.Unity.VoxReader
 				sb.rotation = bone.localRotation;
 				sb.scale = bone.localScale;
 
+				if (boneName == "Hips")
+				{
+					sb.position = Vector3.zero;
+				}
+
 				skeletonBones.Add(sb);
 			}
 
