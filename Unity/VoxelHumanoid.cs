@@ -276,7 +276,7 @@ namespace TakashiCompany.Unity.VoxReader
 			return worldPos;
 		}
 
-		public virtual void Damage(Vector3 center, float radius)
+		public virtual void Damage(Vector3 center, float radius)	// List<IVoxel>をreturnした方がコスト安いかも
 		{
 			foreach (var v in _voxels)
 			{
@@ -323,16 +323,6 @@ namespace TakashiCompany.Unity.VoxReader
 		public IVoxel GetVoxel(int x, int y, int z)
 		{
 			return _voxelMap[x, y, z];
-		}
-
-		private void OnCollisionEnter(Collision collision)
-		{
-			if (collision.collider.TryGetComponent<Sample.Bullet>(out var bullet))
-			{
-				var contact = collision.contacts[0];
-
-				Damage(contact.point, 0.5f);
-			}
 		}
 
 		public virtual void RequestUpdateMesh()
