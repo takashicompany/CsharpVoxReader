@@ -40,6 +40,13 @@ namespace TakashiCompany.Unity.VoxReader
 		}
 #endif
 
+		protected override void Awake()
+		{
+			base.Awake();
+			
+			_renderer.sharedMesh = Instantiate(_renderer.sharedMesh);
+		}
+
 		private void Update()
 		{
 			if (_updateMeshRequested)
