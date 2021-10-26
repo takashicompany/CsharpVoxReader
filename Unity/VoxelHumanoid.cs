@@ -293,6 +293,23 @@ namespace TakashiCompany.Unity.VoxReader
 			}
 		}
 
+		public virtual void Damage(Bounds bounds)
+		{
+			foreach (var v in _voxels)
+			{
+				if (IsActiveVoxel(v.x, v.y, v.z))
+				{
+					var pos = GetVoxelWorldPosition(v.voxelPosition);
+
+					if (bounds.Contains(pos))
+					{
+						ChangeVoxelActive(v.voxelPosition, false);
+						OnDestroyVoxel(v, pos, bounds.center);
+					}
+				}
+			}
+		}
+
 		public void ChangeVoxelActiveAll(bool active)
 		{
 			foreach (var v in _voxels)

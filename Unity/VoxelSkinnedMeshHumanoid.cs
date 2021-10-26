@@ -56,7 +56,7 @@ namespace TakashiCompany.Unity.VoxReader
 			}
 		}
 		
-		private void UpdateMesh()
+		public void UpdateMesh()
 		{
 			var tris = new List<int>();
 			
@@ -124,12 +124,6 @@ namespace TakashiCompany.Unity.VoxReader
 			_renderer.sharedMesh = mesh;
 
 			SetUpAvatar();
-		}
-
-		public override void Damage(Vector3 position, float radius)
-		{
-			base.Damage(position, radius);
-			UpdateMesh();
 		}
 
 		public override void RequestUpdateMesh()
