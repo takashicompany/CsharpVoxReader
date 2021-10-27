@@ -29,6 +29,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private Dictionary<HumanBodyBones, Transform> _boneDict;
 
+		private Dictionary<HumanBodyBones, int> _voxelActiveCounts;
+
 		private Transform[,,] _boneMap;
 
 		public event IVoxelObject.VoxelDestroyDelegate onVoxelDestroyEvent;
@@ -48,6 +50,7 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			var size = _voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
+			_voxelActiveCounts = new Dictionary<HumanBodyBones, int>();
 			_voxelMap = new IVoxel[size.x, size.y, size.z];
 			_voxelPositionMap = new Vector3[size.x, size.y, size.z];
 			_boneMap = new Transform[size.x, size.y, size.z];
@@ -63,6 +66,8 @@ namespace TakashiCompany.Unity.VoxReader
 					continue;
 				}
 				_voxelActive[v.x, v.y, v.z] = true;
+				_voxelActiveCounts[v.bone] += 1;
+
 				_voxelMap[v.x, v.y, v.z] = v;
 
 				if (v.bone != HumanBodyBones.LastBone)
@@ -322,7 +327,9 @@ namespace TakashiCompany.Unity.VoxReader
 		{
 			if (_voxelActive[voxelPosition.x, voxelPosition.y, voxelPosition.z] != active)
 			{
+				var v = GetVoxel(voxelPosition);
 				_voxelActive[voxelPosition.x, voxelPosition.y, voxelPosition.z] = active;
+				_voxelActiveCounts[v.bone] += active ? 1 : -1;
 				OnChangeVoxelActive(voxelPosition, active);
 			}
 		}
@@ -337,10 +344,36 @@ namespace TakashiCompany.Unity.VoxReader
 			onVoxelDestroyEvent?.Invoke(voxel, point, center);
 		}
 
+		public IVoxel GetVoxel(Vector3Int voxelPosition)
+		{
+			return GetVoxel(voxelPosition.x, voxelPosition.y, voxelPosition.z);
+		}
+
 		public IVoxel GetVoxel(int x, int y, int z)
 		{
 			return _voxelMap[x, y, z];
 		}
+
+		public int GetActiveVoxelCount(HumanBodyBones bone)
+		{
+			if (_voxelActiveCounts.TryGetValue(bone, out var count))
+			{
+				return count;
+			}
+
+			return -1;
+		}
+
+		public int GetVoxelCount(HumanBodyBones bone)
+		{
+			if (_voxelBoneDict.TryGetValue(bone, out var list))
+			{
+				return list.Count;
+			}
+
+			return -1;
+		}
+
 
 		public virtual void RequestUpdateMesh()
 		{
