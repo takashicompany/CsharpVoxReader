@@ -65,8 +65,17 @@ namespace TakashiCompany.Unity.VoxReader
 					Debug.LogError("nullです！");
 					continue;
 				}
+				
 				_voxelActive[v.x, v.y, v.z] = true;
-				_voxelActiveCounts[v.bone] += 1;
+
+				if (_voxelActiveCounts.ContainsKey(v.bone))
+				{
+					_voxelActiveCounts[v.bone] += 1;
+				}
+				else
+				{
+					_voxelActiveCounts[v.bone] = 1;
+				}
 
 				_voxelMap[v.x, v.y, v.z] = v;
 
