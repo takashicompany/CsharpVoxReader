@@ -31,6 +31,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private Dictionary<HumanBodyBones, int> _voxelActiveCounts;
 
+		private Dictionary<HumanBodyBones, Collider> _colliderDict;
+
 		private Transform[,,] _boneMap;
 
 		public event IVoxelObject.VoxelDestroyDelegate onVoxelDestroyEvent;
@@ -51,6 +53,7 @@ namespace TakashiCompany.Unity.VoxReader
 			var size = _voxelSize;
 			_voxelActive = new bool[size.x, size.y, size.z];
 			_voxelActiveCounts = new Dictionary<HumanBodyBones, int>();
+			_colliderDict = new Dictionary<HumanBodyBones, Collider>();
 			_voxelMap = new IVoxel[size.x, size.y, size.z];
 			_voxelPositionMap = new Vector3[size.x, size.y, size.z];
 			_boneMap = new Transform[size.x, size.y, size.z];
@@ -65,7 +68,7 @@ namespace TakashiCompany.Unity.VoxReader
 					Debug.LogError("nullです！");
 					continue;
 				}
-				
+
 				_voxelActive[v.x, v.y, v.z] = true;
 
 				if (_voxelActiveCounts.ContainsKey(v.bone))
@@ -103,6 +106,11 @@ namespace TakashiCompany.Unity.VoxReader
 						else
 						{
 							_boneDict.Add(v.bone, bone);
+						}
+
+						if (!_colliderDict.ContainsKey(v.bone) && bone.TryGetComponent<Collider>(out var collider))
+						{
+							_colliderDict.Add(v.bone, collider);
 						}
 					}
 
@@ -267,6 +275,13 @@ namespace TakashiCompany.Unity.VoxReader
 		protected Transform GetBone(HumanBodyBones bone)
 		{
 			return _animator.GetBoneTransform(bone);
+		}
+
+		public Collider GetCollider(HumanBodyBones bone)
+		{
+			_colliderDict.TryGetValue(bone, out var collider);
+
+			return collider;
 		}
 
 		public bool IsActiveVoxel(Vector3Int voxelPosition)
