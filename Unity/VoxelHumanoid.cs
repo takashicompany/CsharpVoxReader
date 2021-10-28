@@ -35,6 +35,8 @@ namespace TakashiCompany.Unity.VoxReader
 
 		private Transform[,,] _boneMap;
 
+		private Dictionary<HumanBodyBones, Vector3> _boneCenter;
+
 		public event IVoxelObject.VoxelDestroyDelegate onVoxelDestroyEvent;
 
 		protected abstract Vector3Int _voxelSize { get; }
@@ -124,6 +126,20 @@ namespace TakashiCompany.Unity.VoxReader
 						_boneMap[v.x, v.y, v.z] = myBone;
 					}
 				}
+			}
+
+			_boneCenter = new Dictionary<HumanBodyBones, Vector3>();
+
+			var boundsDict = _voxels.BuildBoundsDict();
+
+			foreach (var kvp in boundsDict)
+			{
+				var boneName = kvp.Key;
+				var bounds = kvp.Value;
+				var bone = _boneDict[boneName];
+
+				var center = bone.InverseTransformPoint(bounds.center);
+				_boneCenter.Add(boneName, center);
 			}
 		}
 
@@ -349,7 +365,7 @@ namespace TakashiCompany.Unity.VoxReader
 				{
 					var pos = GetVoxelWorldPosition(v.voxelPosition);
 					ChangeVoxelActive(v.voxelPosition, false);
-					OnDestroyVoxel(v, pos, pos);
+					OnDestroyVoxel(v, pos, GetBoneCenter(bone));
 				}
 			}
 		}
@@ -363,7 +379,7 @@ namespace TakashiCompany.Unity.VoxReader
 					var pos = GetVoxelWorldPosition(v.voxelPosition);
 
 					ChangeVoxelActive(v.voxelPosition, false);
-					OnDestroyVoxel(v, pos, pos);
+					OnDestroyVoxel(v, pos, GetBoneCenter(v.bone));
 				}
 			}
 		}
@@ -425,6 +441,12 @@ namespace TakashiCompany.Unity.VoxReader
 			}
 
 			return -1;
+		}
+
+		public Vector3 GetBoneCenter(HumanBodyBones boneName)
+		{
+			var bone = GetBone(boneName);
+			return bone.TransformPoint(_boneCenter[boneName]);
 		}
 
 
