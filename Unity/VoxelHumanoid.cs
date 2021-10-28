@@ -339,6 +339,35 @@ namespace TakashiCompany.Unity.VoxReader
 			}
 		}
 
+		public virtual void Damage(HumanBodyBones bone)
+		{
+			var voxels = _voxelBoneDict[bone];
+
+			foreach (var v in voxels)
+			{
+				if (IsActiveVoxel(v.voxelPosition))
+				{
+					var pos = GetVoxelWorldPosition(v.voxelPosition);
+					ChangeVoxelActive(v.voxelPosition, false);
+					OnDestroyVoxel(v, pos, pos);
+				}
+			}
+		}
+
+		public void DamageAll()
+		{
+			foreach (var v in _voxels)
+			{
+				if (IsActiveVoxel(v.x, v.y, v.z))
+				{
+					var pos = GetVoxelWorldPosition(v.voxelPosition);
+
+					ChangeVoxelActive(v.voxelPosition, false);
+					OnDestroyVoxel(v, pos, pos);
+				}
+			}
+		}
+
 		public void ChangeVoxelActiveAll(bool active)
 		{
 			foreach (var v in _voxels)
